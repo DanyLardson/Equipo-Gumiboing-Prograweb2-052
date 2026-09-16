@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Panel de administración — CineScore</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .stat-card{ background:var(--bg-surface); border-radius:8px; padding:14px; }
+  .stat-card.alert{ background:#2a1a1a; }
+  .stat-card p:first-child{ color:var(--text-muted); font-size:11px; margin:0; }
+  .stat-card.alert p:first-child{ color:#e79a9a; }
+  .stat-card p:last-child{ color:#fff; font-size:22px; font-weight:700; margin:4px 0 0; }
+  .stat-card.alert p:last-child{ color:#F09595; }
+  .report-row{ background:var(--bg-surface); border-radius:8px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+</style>
+</head>
+<body data-page="admin">
+
+<div class="navbar">
+  <span class="logo">Cine<span>Score</span> <span class="badge-admin">ADMIN</span></span>
+  <nav>
+    <a href="explorar.html" data-page="explorar">Explorar</a>
+    <a href="chat.html" data-page="chat">Chat</a>
+    <a href="admin.html" data-page="admin">Panel admin</a>
+    <a href="perfil.html" data-page="perfil">Perfil</a>
+  </nav>
+</div>
+
+<h1 class="page-title">Panel de administración</h1>
+
+<div class="container">
+  <div class="dark-panel" style="padding:24px;">
+
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:24px;">
+      <div class="stat-card"><p>Reseñas</p><p>4,812</p></div>
+      <div class="stat-card"><p>Foros activos</p><p>96</p></div>
+      <div class="stat-card"><p>Usuarios</p><p>1,204</p></div>
+      <div class="stat-card alert"><p>Reportes pendientes</p><p>7</p></div>
+    </div>
+
+    <h3 style="font-size:16px; margin-bottom:12px;">Contenido reportado</h3>
+
+    <div class="report-row">
+      <div>
+        <p style="margin:0; font-size:13px;">Comentario en "Coco" — usuario Mirjona</p>
+        <p style="margin:2px 0 0; font-size:11px; color:var(--text-muted);">Reportado por: lenguaje ofensivo</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-outline" data-action="ver" style="color:#c9c9d3; border-color:var(--support); background:transparent; padding:6px 12px; font-size:12px;">Ver</button>
+        <button class="btn" data-action="eliminar" style="color:#F09595; border:1px solid var(--accent-red); background:transparent; padding:6px 12px; font-size:12px;">Eliminar</button>
+      </div>
+    </div>
+
+    <div class="report-row">
+      <div>
+        <p style="margin:0; font-size:13px;">Foro "¿El final es real?" — Parásitos</p>
+        <p style="margin:2px 0 0; font-size:11px; color:var(--text-muted);">Reportado por: spoilers sin aviso</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-outline" data-action="ver" style="color:#c9c9d3; border-color:var(--support); background:transparent; padding:6px 12px; font-size:12px;">Ver</button>
+        <button class="btn" data-action="eliminar" style="color:#F09595; border:1px solid var(--accent-red); background:transparent; padding:6px 12px; font-size:12px;">Eliminar</button>
+      </div>
+    </div>
+
+    <div class="report-row">
+      <div>
+        <p style="margin:0; font-size:13px;">Reseña de "El Padrino" — usuario starouzzz</p>
+        <p style="margin:2px 0 0; font-size:11px; color:var(--text-muted);">Reportado por: contenido duplicado</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-outline" data-action="ver" style="color:#c9c9d3; border-color:var(--support); background:transparent; padding:6px 12px; font-size:12px;">Ver</button>
+        <button class="btn" data-action="eliminar" style="color:#F09595; border:1px solid var(--accent-red); background:transparent; padding:6px 12px; font-size:12px;">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/main.js"></script>
+<script src="../js/admin.js"></script>
+</body>
+</html>

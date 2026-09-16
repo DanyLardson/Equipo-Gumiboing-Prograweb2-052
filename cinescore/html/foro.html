@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Foro — CineScore</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-page="foros">
+
+<div class="navbar">
+  <span class="logo">Cine<span>Score</span></span>
+  <nav>
+    <a href="explorar.html" data-page="inicio">Inicio</a>
+    <a href="explorar.html" data-page="explorar">Explorar</a>
+    <a href="foros.html" data-page="foros">Foros</a>
+    <a href="chat.html" data-page="chat">Chat</a>
+    <a href="perfil.html" data-page="perfil">Perfil</a>
+  </nav>
+</div>
+
+<h1 class="page-title">La crítica social detrás de la casa</h1>
+
+<div class="container" style="max-width:800px;">
+  <a href="foros.html" style="display:inline-flex; align-items:center; gap:6px; color:#7a7a72; font-size:13px; margin-bottom:16px;">
+    <i class="ti ti-arrow-left" aria-hidden="true"></i> Volver a foros de Parásitos
+  </a>
+
+  <div class="dark-panel" style="padding:24px;">
+    <div style="display:flex; gap:12px; padding-bottom:16px; border-bottom:1px solid var(--border-dark);">
+      <div class="avatar"></div>
+      <div style="flex:1;">
+        <p style="font-weight:600; margin:0;">Mirjona <span style="color:var(--text-faint); font-weight:400; font-size:12px;">· inició el foro · hace 1 semana</span></p>
+        <p style="color:var(--text-muted); font-size:13px; margin:8px 0 0;">Toda la casa es una metáfora de clase, hasta la escalera que conecta los niveles funciona como representación literal de la jerarquía social. ¿Qué otros detalles notaron?</p>
+      </div>
+    </div>
+
+    <div style="padding:16px 0; border-bottom:1px solid var(--border-dark); display:flex; gap:12px;">
+      <div class="avatar"></div>
+      <div style="flex:1;">
+        <p style="font-weight:600; margin:0; font-size:14px;">AlexandX205</p>
+        <p style="color:var(--text-muted); font-size:13px; margin:6px 0 10px;">Las inundaciones también son clave, muestran cómo el mismo evento afecta radicalmente distinto según tu nivel económico.</p>
+        <button class="like-btn">
+          <i class="ti ti-heart" aria-hidden="true"></i>
+          <span class="like-count">9</span>
+        </button>
+      </div>
+    </div>
+
+    <div style="padding:16px 0; display:flex; gap:12px;">
+      <div class="avatar"></div>
+      <div style="flex:1;">
+        <p style="font-weight:600; margin:0; font-size:14px;">The Iconic Dany</p>
+        <p style="color:var(--text-muted); font-size:13px; margin:6px 0 10px;">El olor es otro símbolo importante que casi nadie menciona.</p>
+        <button class="like-btn">
+          <i class="ti ti-heart" aria-hidden="true"></i>
+          <span class="like-count">15</span>
+        </button>
+      </div>
+    </div>
+
+    <form id="foro-form" style="display:flex; gap:10px; margin-top:20px; padding-top:16px; border-top:1px solid var(--border-dark);">
+      <input type="text" placeholder="Escribe tu respuesta..." style="flex:1; padding:10px 14px; border-radius:20px; border:1px solid var(--border-dark); background:var(--bg-surface); color:#fff; font-size:13px;">
+      <button type="submit" class="btn btn-primary">Responder</button>
+    </form>
+  </div>
+</div>
+
+<script src="../js/main.js"></script>
+<script src="../js/likes.js"></script>
+<script>
+  // TODO: reemplazar con POST /api/foros/:id/mensajes { texto }
+  document.getElementById('foro-form').addEventListener('submit', (e) => e.preventDefault());
+</script>
+</body>
+</html>

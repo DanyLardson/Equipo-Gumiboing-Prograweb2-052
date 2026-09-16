@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Perfil — CineScore</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-page="perfil">
+
+<div class="navbar">
+  <span class="logo">Cine<span>Score</span></span>
+  <nav>
+    <a href="explorar.html" data-page="inicio">Inicio</a>
+    <a href="explorar.html" data-page="explorar">Explorar</a>
+    <a href="foros.html" data-page="foros">Foros</a>
+    <a href="chat.html" data-page="chat">Chat</a>
+    <a href="perfil.html" data-page="perfil">Perfil</a>
+  </nav>
+</div>
+
+<h1 class="page-title">Perfil de usuario</h1>
+
+<div class="container" style="display:grid; grid-template-columns:280px 1fr; gap:32px; align-items:start;">
+
+  <div class="card" style="text-align:center;">
+    <div style="width:90px; height:90px; border-radius:50%; background:linear-gradient(135deg,var(--accent-red),var(--accent-gold)); margin:0 auto 14px;"></div>
+    <h3 style="font-size:18px;">starouzzz</h3>
+    <p style="color:#7a7a72; font-size:13px; font-style:italic; margin:4px 0 18px;">vivan las pelis</p>
+
+    <div style="display:flex; justify-content:space-around; margin-bottom:20px;">
+      <div><p style="font-size:20px; font-weight:700; color:var(--accent-red); margin:0;">27</p><p style="font-size:12px; color:#7a7a72; margin:2px 0 0;">Reseñas</p></div>
+      <div><p style="font-size:20px; font-weight:700; color:var(--accent-red); margin:0;">143</p><p style="font-size:12px; color:#7a7a72; margin:2px 0 0;">Comentarios</p></div>
+      <div><p style="font-size:20px; font-weight:700; color:var(--accent-red); margin:0;">12</p><p style="font-size:12px; color:#7a7a72; margin:2px 0 0;">Favoritos</p></div>
+    </div>
+
+    <button class="btn btn-dark btn-full">Editar perfil</button>
+    <a href="chat.html" class="btn btn-outline btn-full" style="margin-top:10px;">
+      <i class="ti ti-users" aria-hidden="true"></i> Mis amigos
+    </a>
+  </div>
+
+  <div>
+    <h3 style="font-size:18px; margin-bottom:14px;">Reseñas recientes</h3>
+
+    <div class="card" style="display:flex; align-items:center; gap:14px; margin-bottom:10px;">
+      <img src="https://placehold.co/60x84/1a1408/F2B134?text=O" alt="" style="border-radius:6px;">
+      <div style="flex:1;">
+        <p style="font-weight:600; margin:0;">Oppenheimer</p>
+        <span class="stars">★★★★★</span>
+      </div>
+      <span style="color:#a3a39a; font-size:12px;">Hace 2 días</span>
+    </div>
+
+    <div class="card" style="display:flex; align-items:center; gap:14px; margin-bottom:10px;">
+      <img src="https://placehold.co/60x84/1a1030/F2B134?text=L" alt="" style="border-radius:6px;">
+      <div style="flex:1;">
+        <p style="font-weight:600; margin:0;">La La Land</p>
+        <span class="stars">★★★★☆</span>
+      </div>
+      <span style="color:#a3a39a; font-size:12px;">Hace 1 semana</span>
+    </div>
+
+    <div class="card" style="display:flex; align-items:center; gap:14px;">
+      <img src="https://placehold.co/60x84/1a1a10/F2B134?text=G" alt="" style="border-radius:6px;">
+      <div style="flex:1;">
+        <p style="font-weight:600; margin:0;">El Padrino</p>
+        <span class="stars">★★★★★</span>
+      </div>
+      <span style="color:#a3a39a; font-size:12px;">Hace 3 semanas</span>
+    </div>
+  </div>
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

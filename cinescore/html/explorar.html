@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Explorar títulos — CineScore</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-page="explorar">
+
+<div class="navbar">
+  <span class="logo">Cine<span>Score</span></span>
+  <nav>
+    <a href="explorar.html" data-page="inicio">Inicio</a>
+    <a href="explorar.html" data-page="explorar">Explorar</a>
+    <a href="foros.html" data-page="foros">Foros</a>
+    <a href="chat.html" data-page="chat">Chat</a>
+    <a href="perfil.html" data-page="perfil">Perfil</a>
+  </nav>
+</div>
+
+<h1 class="page-title">Explorar títulos</h1>
+
+<div class="container">
+  <input type="text" id="buscador" placeholder="Buscar película o serie..."
+    style="width:100%; padding:14px 18px; border-radius:24px; border:1px solid #d8d6cc; background:#fff; font-size:14px; margin-bottom:6px;">
+
+  <div class="chips">
+    <button class="chip active" data-genero="Todos">Todos</button>
+    <button class="chip" data-genero="Drama">Drama</button>
+    <button class="chip" data-genero="Ciencia ficción">Ciencia ficción</button>
+    <button class="chip" data-genero="Comedia">Comedia</button>
+    <button class="chip" data-genero="Suspenso">Suspenso</button>
+  </div>
+
+  <div class="movie-grid">
+    <a class="movie-card" href="detalle.html" data-titulo="Oppenheimer" data-genero="Drama">
+      <img src="https://placehold.co/300x450/1a1408/F2B134?text=Oppenheimer" alt="Póster de Oppenheimer">
+      <div class="info">
+        <h3>Oppenheimer</h3>
+        <p>Drama · 2023</p>
+        <span class="stars">★★★★★</span>
+      </div>
+    </a>
+    <a class="movie-card" href="detalle.html" data-titulo="Parásitos" data-genero="Suspenso">
+      <img src="https://placehold.co/300x450/0d1a17/F2B134?text=Par%C3%A1sitos" alt="Póster de Parásitos">
+      <div class="info">
+        <h3>Parásitos</h3>
+        <p>Suspenso · 2019</p>
+        <span class="stars">★★★★★</span>
+      </div>
+    </a>
+    <a class="movie-card" href="detalle.html" data-titulo="La La Land" data-genero="Comedia">
+      <img src="https://placehold.co/300x450/1a1030/F2B134?text=La+La+Land" alt="Póster de La La Land">
+      <div class="info">
+        <h3>La La Land</h3>
+        <p>Musical · 2016</p>
+        <span class="stars">★★★★☆</span>
+      </div>
+    </a>
+    <a class="movie-card" href="detalle.html" data-titulo="El Padrino" data-genero="Drama">
+      <img src="https://placehold.co/300x450/1a1a10/F2B134?text=El+Padrino" alt="Póster de El Padrino">
+      <div class="info">
+        <h3>El Padrino</h3>
+        <p>Drama · 1972</p>
+        <span class="stars">★★★★★</span>
+      </div>
+    </a>
+    <a class="movie-card" href="detalle.html" data-titulo="Coco" data-genero="Comedia">
+      <img src="https://placehold.co/300x450/301020/F2B134?text=Coco" alt="Póster de Coco">
+      <div class="info">
+        <h3>Coco</h3>
+        <p>Animación · 2017</p>
+        <span class="stars">★★★★☆</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+<script src="../js/main.js"></script>
+<script src="../js/explorar.js"></script>
+</body>
+</html>
