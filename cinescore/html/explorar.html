@@ -23,8 +23,13 @@
 <h1 class="page-title">Explorar títulos</h1>
 
 <div class="container">
-  <input type="text" id="buscador" placeholder="Buscar película o serie..."
-    style="width:100%; padding:14px 18px; border-radius:24px; border:1px solid #d8d6cc; background:#fff; font-size:14px; margin-bottom:6px;">
+  <div style="display:flex; gap:12px; margin-bottom:6px;">
+    <input type="text" id="buscador" placeholder="Buscar película o serie..."
+      style="flex:1; padding:14px 18px; border-radius:24px; border:1px solid #d8d6cc; background:#fff; font-size:14px;">
+    <a href="agregar-pelicula.html" class="btn btn-dark" style="white-space:nowrap;">
+      <i class="ti ti-plus" aria-hidden="true"></i> Agregar película
+    </a>
+  </div>
 
   <div class="chips">
     <button class="chip active" data-genero="Todos">Todos</button>

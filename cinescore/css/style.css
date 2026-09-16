@@ -1,3 +1,7 @@
+/* ============================================
+   CineScore — hoja de estilos global
+   ============================================ */
+
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
 
 :root{
@@ -223,6 +227,64 @@ h1,h2,h3{
   font-size:18px;
 }
 .icon-btn:hover{ color:var(--text-light); }
+
+/* ---------- Botón pequeño de acción en navbar (agregar película, etc.) ---------- */
+.btn-nav-add{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:var(--accent-gold);
+  color:#1e1e2e;
+  border:none;
+  border-radius:20px;
+  padding:8px 16px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+}
+.btn-nav-add:hover{ opacity:.9; }
+
+/* ---------- Select nativo con el mismo estilo que los inputs ---------- */
+.field select{
+  width:100%;
+  padding:11px 14px;
+  border:1px solid #d8d6cc;
+  border-radius:var(--radius-sm);
+  background:#fbfaf6;
+  font-family:var(--font-body);
+  font-size:14px;
+}
+.field select:focus{ outline:none; border-color:var(--accent-red); }
+
+/* ---------- Filas de resultado (buscar amigos / buscar película) ---------- */
+.result-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 16px;
+  border-radius:8px;
+  background:var(--bg-surface);
+  margin-bottom:10px;
+}
+.result-row .info{ flex:1; }
+.result-row .info p:first-child{ font-weight:600; margin:0; font-size:14px; }
+.result-row .info p:last-child{ margin:3px 0 0; font-size:12px; color:var(--text-muted); }
+
+/* ---------- Estados de amistad ---------- */
+.btn-friend{
+  border:1px solid var(--support);
+  background:transparent;
+  color:#fff;
+  border-radius:20px;
+  padding:8px 16px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.btn-friend:hover{ background:var(--bg-surface-2); }
+.btn-friend.sent{ color:var(--text-muted); border-color:var(--border-dark); cursor:default; }
+.btn-friend.accepted{ background:var(--accent-gold); color:#1e1e2e; border-color:var(--accent-gold); cursor:default; }
 
 @media (max-width:720px){
   .navbar nav{ display:none; }

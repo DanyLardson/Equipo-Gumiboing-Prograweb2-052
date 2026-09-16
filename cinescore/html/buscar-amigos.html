@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Buscar amigos — CineScore</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-page="chat">
+
+<div class="navbar">
+  <span class="logo">Cine<span>Score</span></span>
+  <nav>
+    <a href="explorar.html" data-page="inicio">Inicio</a>
+    <a href="explorar.html" data-page="explorar">Explorar</a>
+    <a href="foros.html" data-page="foros">Foros</a>
+    <a href="chat.html" data-page="chat">Chat</a>
+    <a href="perfil.html" data-page="perfil">Perfil</a>
+  </nav>
+</div>
+
+<h1 class="page-title">Buscar amigos</h1>
+
+<div class="container" style="max-width:700px;">
+  <a href="chat.html" style="display:inline-flex; align-items:center; gap:6px; color:#7a7a72; font-size:13px; margin-bottom:16px;">
+    <i class="ti ti-arrow-left" aria-hidden="true"></i> Volver al chat
+  </a>
+
+  <div class="dark-panel" style="padding:24px;">
+    <input type="text" id="buscador-amigos" placeholder="Buscar por nombre de usuario..."
+      style="width:100%; padding:12px 16px; border-radius:20px; border:1px solid var(--border-dark); background:var(--bg-surface); color:#fff; font-size:14px; margin-bottom:18px;">
+
+    <p style="color:var(--text-muted); font-size:12px; margin:0 0 10px; text-transform:uppercase; letter-spacing:.5px;">Resultados</p>
+
+    <div class="result-row">
+      <div class="avatar"></div>
+      <div class="info">
+        <p>Oshowot</p>
+        <p>27 reseñas · amigos en común: 3</p>
+      </div>
+      <button class="btn-friend accepted" disabled>
+        <i class="ti ti-check" aria-hidden="true"></i> Amigos
+      </button>
+    </div>
+
+    <div class="result-row">
+      <div class="avatar"></div>
+      <div class="info">
+        <p>lenaquevecine</p>
+        <p>84 reseñas · amigos en común: 1</p>
+      </div>
+      <button class="btn-friend" data-action="solicitar">
+        <i class="ti ti-user-plus" aria-hidden="true"></i> Agregar
+      </button>
+    </div>
+
+    <div class="result-row">
+      <div class="avatar"></div>
+      <div class="info">
+        <p>rollo_35mm</p>
+        <p>12 reseñas · amigos en común: 0</p>
+      </div>
+      <button class="btn-friend" data-action="solicitar">
+        <i class="ti ti-user-plus" aria-hidden="true"></i> Agregar
+      </button>
+    </div>
+
+    <div class="result-row">
+      <div class="avatar"></div>
+      <div class="info">
+        <p>The Iconic Dany</p>
+        <p>50 reseñas · amigos en común: 5</p>
+      </div>
+      <button class="btn-friend sent" disabled>
+        <i class="ti ti-clock" aria-hidden="true"></i> Solicitud enviada
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/main.js"></script>
+<script src="../js/amigos.js"></script>
+</body>
+</html>
