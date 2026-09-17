@@ -1,7 +1,4 @@
-// explorar.js
-// Filtra las tarjetas de .movie-grid por género (chips) y por texto de búsqueda.
-// TODO: al conectar el backend, reemplazar el filtrado en el DOM por una
-// llamada real: GET /api/peliculas?genero=...&busqueda=...
+//filtra las tarjetas de .movie-grid por genero y por texto de busqueda
 
 document.addEventListener('DOMContentLoaded', () => {
   const chips = document.querySelectorAll('.chip');

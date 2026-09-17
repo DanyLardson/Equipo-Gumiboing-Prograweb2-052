@@ -1,7 +1,5 @@
-// main.js
-// Se incluye en TODAS las páginas.
-// Resalta el link del navbar que corresponde a la página actual usando
-// el atributo data-page puesto en el <body>.
+//Se incluye en TODAS las páginas.
+// Resalta el link del navbar que corresponde a la página actual usando el atributo data-page puesto en el <body>.
 
 document.addEventListener('DOMContentLoaded', () => {
   const currentPage = document.body.dataset.page;

@@ -1,9 +1,6 @@
-// chat.js
-// Demo de front-end para el chat en tiempo real.
-// Aquí solo se agrega el mensaje a la ventana actual.
-// TODO: al conectar el backend, sustituir por WebSockets / Socket.io:
-//   socket.emit('mensaje', { conversacionId, texto });
-//   socket.on('mensaje', (msg) => agregarMensaje(msg));
+
+//Demo de front-end para el chat en tiempo real. solo agrega mensajes a la ventana actual
+//al conectar el backend, lo sustituira por WebSockets / Socket.io:
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('chat-form');

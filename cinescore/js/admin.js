@@ -1,8 +1,4 @@
-// admin.js
-// Acciones del panel de administración sobre contenido reportado.
-// TODO: al conectar el backend:
-//   DELETE /api/moderacion/:tipo/:id   -> eliminar reseña/comentario/foro
-//   GET    /api/moderacion/reportes    -> traer la lista real de reportes
+
 
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-action="eliminar"]').forEach(btn => {

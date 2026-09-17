@@ -1,6 +1,4 @@
-/* ============================================
-   CineScore — hoja de estilos global
-   ============================================ */
+
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
 
@@ -39,7 +37,7 @@ h1,h2,h3{
   margin:0;
 }
 
-/* ---------- Navbar ---------- */
+/* navbar */
 .navbar{
   background:var(--bg-surface);
   padding:16px 32px;
@@ -74,7 +72,7 @@ h1,h2,h3{
 }
 .navbar-right{ display:flex; align-items:center; gap:16px; }
 
-/* ---------- Layout general ---------- */
+/*layout general */
 .page-title{
   max-width:1100px;
   margin:32px auto 0;
@@ -93,7 +91,7 @@ h1,h2,h3{
   padding:24px;
 }
 
-/* ---------- Botones ---------- */
+/*botones */
 .btn{
   display:inline-flex;
   align-items:center;
@@ -121,7 +119,7 @@ h1,h2,h3{
 .btn-outline:hover{ background:#f2f1ec; }
 .btn-full{ width:100%; }
 
-/* ---------- Formularios ---------- */
+/* fromularios */
 .field{ margin-bottom:16px; }
 .field label{
   display:block;
@@ -146,7 +144,7 @@ h1,h2,h3{
   border-color:var(--accent-red);
 }
 
-/* ---------- Chips de filtro ---------- */
+/*chips de filtros */
 .chips{ display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 24px; }
 .chip{
   border:none;
@@ -160,7 +158,7 @@ h1,h2,h3{
 }
 .chip.active{ background:var(--accent-red); color:#fff; }
 
-/* ---------- Grid de títulos ---------- */
+/*grid de titulos */
 .movie-grid{
   display:grid;
   grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
@@ -180,13 +178,13 @@ h1,h2,h3{
 .movie-card .info h3{ font-size:15px; font-family:var(--font-body); font-weight:600; margin-bottom:2px;}
 .movie-card .info p{ font-size:12px; color:#7a7a72; margin:0 0 6px; }
 
-/* ---------- Estrellas ---------- */
+/* Estrellas */
 .stars{ color:var(--accent-gold); font-size:15px; letter-spacing:1px; }
 .star-input{ display:inline-flex; gap:4px; cursor:pointer; }
 .star-input i{ font-size:24px; color:#d8d6cc; }
 .star-input i.filled{ color:var(--accent-gold); }
 
-/* ---------- Reacciones (me gusta) ---------- */
+/* likes */
 .like-btn{
   display:inline-flex;
   align-items:center;
@@ -203,7 +201,7 @@ h1,h2,h3{
 .like-btn.liked{ color:var(--accent-red); }
 .like-btn:hover{ background:rgba(0,0,0,.04); }
 
-/* ---------- Tarjetas oscuras (foros / chat / admin comparten fondo oscuro) ---------- */
+/*tarjetas oscuras para foros / chat / admin y lo que ocupe fondo oscuro */
 .dark-panel{
   background:var(--bg-main);
   border-radius:12px;
@@ -228,7 +226,7 @@ h1,h2,h3{
 }
 .icon-btn:hover{ color:var(--text-light); }
 
-/* ---------- Botón pequeño de acción en navbar (agregar película, etc.) ---------- */
+/*boton pequeño de accion en navbar, tipo agregar película, etc */
 .btn-nav-add{
   display:inline-flex;
   align-items:center;
@@ -244,7 +242,7 @@ h1,h2,h3{
 }
 .btn-nav-add:hover{ opacity:.9; }
 
-/* ---------- Select nativo con el mismo estilo que los inputs ---------- */
+/*select nativo con el mismo estilo que los inputs*/
 .field select{
   width:100%;
   padding:11px 14px;
@@ -256,7 +254,7 @@ h1,h2,h3{
 }
 .field select:focus{ outline:none; border-color:var(--accent-red); }
 
-/* ---------- Filas de resultado (buscar amigos / buscar película) ---------- */
+/*filas de resultado para buscar amigos y buscar película*/
 .result-row{
   display:flex;
   align-items:center;
@@ -270,7 +268,7 @@ h1,h2,h3{
 .result-row .info p:first-child{ font-weight:600; margin:0; font-size:14px; }
 .result-row .info p:last-child{ margin:3px 0 0; font-size:12px; color:var(--text-muted); }
 
-/* ---------- Estados de amistad ---------- */
+/*estados de amistad */
 .btn-friend{
   border:1px solid var(--support);
   background:transparent;

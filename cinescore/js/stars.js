@@ -1,7 +1,5 @@
-// stars.js
-// Convierte cualquier .star-input en un selector de calificación de 1 a 5.
-// Guarda el valor elegido en el atributo data-value del propio contenedor,
-// listo para leerse cuando el formulario se conecte a la API real.
+//stars.js convierte cualquier .star-input en un selector de calificación de 1 a 5.
+//guarda el valor elegido en el atributo data-value del propio contenedor, listo para leerse cuando el formulario se conecte a la API real.
 
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.star-input').forEach(container => {

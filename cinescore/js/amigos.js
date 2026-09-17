@@ -1,9 +1,6 @@
-// amigos.js
-// Maneja el botón "Agregar" (envía solicitud de amistad) y el buscador
-// de la ventana buscar-amigos.html.
-// TODO: al conectar el backend:
-//   POST /api/amistades { destinatarioId }   -> enviar solicitud
-//   GET  /api/usuarios?buscar=texto          -> buscar usuarios reales
+// Maneja el botón Agregar, envía solicitud de amistad y el buscador de la ventana buscar-amigos.html
+// POST:   enviara solicitud
+// GET: buscara usuarios reales
 
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-action="solicitar"]').forEach(btn => {
