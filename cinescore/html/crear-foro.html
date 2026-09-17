@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Crear foro — CineScore</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-page="foros">
+
+<div class="navbar">
+  <span class="logo">Cine<span>Score</span></span>
+  <nav>
+    
+    <a href="explorar.html" data-page="explorar">Inicio</a>
+    <a href="foros.html" data-page="foros">Foros</a>
+    <a href="explorar.html" data-page="inicio">Inicio</a>
+    <a href="chat.html" data-page="chat">Chat</a>
+    <a href="perfil.html" data-page="perfil">Perfil</a>
+  </nav>
+</div>
+
+<h1 class="page-title">Crear foro de discusión</h1>
+
+<div class="container" style="max-width:700px;">
+  <a href="foros.html" style="display:inline-flex; align-items:center; gap:6px; color:#7a7a72; font-size:13px; margin-bottom:16px;">
+    <i class="ti ti-arrow-left" aria-hidden="true"></i> Volver a foros
+  </a>
+
+  <div class="card">
+    <form id="crear-foro-form">
+      <div class="field">
+        <label for="pelicula">Película o serie</label>
+        <select id="pelicula" required>
+          <option value="" disabled selected>Selecciona un título ya agregado...</option>
+          <option value="parasitos">Parásitos (2019)</option>
+          <option value="oppenheimer">Oppenheimer (2023)</option>
+          <option value="lalaland">La La Land (2016)</option>
+          <option value="padrino">El Padrino (1972)</option>
+          <option value="coco">Coco (2017)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="titulo">Título del foro</label>
+        <input type="text" id="titulo" placeholder="Ej. ¿El final es una fantasía o pasó de verdad?" required>
+      </div>
+
+      <div class="field">
+        <label for="descripcion">Mensaje inicial</label>
+        <textarea id="descripcion" placeholder="Plantea el tema o pregunta que quieres discutir con la comunidad..." required></textarea>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+        <p style="font-size:12px; color:#8a8a86; font-style:italic; margin:0;">Cualquier usuario registrado puede crear un foro</p>
+        <button type="submit" class="btn btn-primary">Publicar foro</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+  // TODO: reemplazar con POST /api/foros { peliculaId, titulo, mensajeInicial }
+  document.getElementById('crear-foro-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    window.location.href = 'foro.html';
+  });
+</script>
+</body>
+</html>
