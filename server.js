@@ -11,15 +11,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //Para hacer las carpetas publicas
-// Esto direcciona a los html para que encuentren sus js y css
 app.use('/css', express.static(path.join(__dirname, 'cinescore', 'css')));
 app.use('/js', express.static(path.join(__dirname, 'cinescore', 'js')));
 app.use(express.static(path.join(__dirname, 'cinescore', 'html')));
 app.use('/html', express.static(path.join(__dirname, 'cinescore', 'html')));
 
-// 3. Conexión a tu MongoDB Compass
+// Pa conectar a MongoDB pa Compass
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('🚀 ¡Conexión exitosa a MongoDB Compass realizada!'))
+  .then(() => console.log('Conexión exitosa a MongoDB Compass'))
   .catch(err => console.error('❌ Error al conectar a la base de datos:', err));
 
 //Ruta para poner la ventana principal y entrr a http://localhost:3000
