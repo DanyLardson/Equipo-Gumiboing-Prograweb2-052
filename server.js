@@ -6,6 +6,8 @@ const path = require('path'); //libreria de Node.js para ayudar con las rutas de
 const app = express();
 const PORT = 3000;
 
+const { Usuario, Pelicula, Resena, Comentario, Foro, MensajeForo, Amistad, Conversacion, MensajeChat, Reporte} = require('./models');
+
 //formularios
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
