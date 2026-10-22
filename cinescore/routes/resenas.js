@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { Resena, Pelicula } = require('../models');
+const { Resena, Pelicula, Comentario } = require('../models');
 const { requireLogin } = require('../middleware/auth');
 
 const router = express.Router();
@@ -29,6 +29,13 @@ router.get('/', async (req, res) => {
       .populate('usuario', 'username avatar')
       .sort({ createdAt: -1 });
 
+        // Cuántos comentarios tiene cada reseña
+    const conteos = await Comentario.aggregate([
+      { $match: { resena: { $in: resenas.map(r => r._id) } } },
+      { $group: { _id: '$resena', total: { $sum: 1 } } }
+    ]);
+    const totales = new Map(conteos.map(c => [c._id.toString(), c.total]));
+
     const yo = req.session.userId;
     res.json(resenas.map(r => ({
       _id: r._id,
@@ -37,6 +44,7 @@ router.get('/', async (req, res) => {
       calificacion: r.calificacion,
       createdAt: r.createdAt,
       usuario: r.usuario,
+      comentarios: totales.get(r._id.toString()) || 0,
       likes: r.likes.length,
       yoLeDiLike: !!yo && r.likes.some(u => u.toString() === yo)
     })));
