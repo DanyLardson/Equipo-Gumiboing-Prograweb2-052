@@ -10,7 +10,7 @@ const PeliculaSchema = new Schema({
   genero: {
     type: String,
     required: true,
-    enum: ['Drama', 'Ciencia ficción', 'Comedia', 'Suspenso', 'Terror', 'Accion', 'Animacion'],
+    enum: ['Drama', 'Ciencia ficción', 'Comedia', 'Suspenso', 'Terror', 'Acción', 'Animación'],
   },
   sinopsis: { type: String, default: '' },
   poster: { type: String, default: '' }, // Es la URL de la imagen
