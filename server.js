@@ -37,6 +37,7 @@ app.get('/', (req, res) => {
 
 //Rutas de la API
 app.use('/api/auth', require('./cinescore/routes/auth'));
+app.use('/api/peliculas', require('./cinescore/routes/peliculas'));
 
 //Servidor funcionando
 app.listen(PORT, () => {
