@@ -7,3 +7,13 @@ async function postJSON(url, body = {}) {
   const data = await res.json();
   return { ok: res.ok, status: res.status, data };
 }
+
+async function putJSON(url, body = {}) {
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  return { ok: res.ok, status: res.status, data };
+}

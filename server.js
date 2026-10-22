@@ -37,11 +37,12 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'cinescore', 'html', 'registro.html')); 
 });
 
-//Rutas de las API
+//Rutas de la API
 app.use('/api/auth', require('./cinescore/routes/auth'));
 app.use('/api/peliculas', require('./cinescore/routes/peliculas'));
 app.use('/api/resenas', require('./cinescore/routes/resenas'));
 app.use('/api/comentarios', require('./cinescore/routes/comentarios'));
+app.use('/api/usuarios', require('./cinescore/routes/usuarios'));
 
 //Servidor funcionando
 app.listen(PORT, () => {
