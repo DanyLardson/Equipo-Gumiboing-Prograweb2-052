@@ -1,14 +1,42 @@
-//sistema de likes reutilizable para reseñas, comentarios y mensajes de foro.
-// Por ahora solo cambia el estado visualmente y suma o resta del contador local.
+function escapar(texto) {
+  return String(texto ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.like-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const countEl = btn.querySelector('.like-count');
-      let count = parseInt(countEl.textContent, 10);
-      const liked = btn.classList.toggle('liked');
-      count = liked ? count + 1 : count - 1;
-      countEl.textContent = count;
-    });
-  });
+function estrellas(numero) {
+  const llenas = Math.round(numero || 0);
+  return '★'.repeat(llenas) + '☆'.repeat(5 - llenas);
+}
+
+// Si el botón tiene data-url, el like se guarda en el servidor.
+// Si no, solo cambia visualmente (de puro ejemplo pues).
+
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.like-btn');
+  if (!btn) return;
+
+  const countEl = btn.querySelector('.like-count');
+  const url = btn.dataset.url;
+
+  if (!url) {
+    const liked = btn.classList.toggle('liked');
+    countEl.textContent = parseInt(countEl.textContent, 10) + (liked ? 1 : -1);
+    return;
+  }
+
+  const { ok, status, data } = await postJSON(url);
+  if (status === 401) {
+    window.location.href = 'login.html';
+    return;
+  }
+  if (!ok) {
+    alert(data.error);
+    return;
+  }
+  btn.classList.toggle('liked', data.liked);
+  countEl.textContent = data.likes;
 });

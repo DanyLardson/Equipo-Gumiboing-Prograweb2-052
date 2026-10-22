@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Escribir reseña — CineScore</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="/vendor/tabler/tabler-icons.min.css">
 <link rel="stylesheet" href="../css/style.css">
 </head>
 <body data-page="explorar">
@@ -24,16 +24,16 @@
 
 <div class="container" style="max-width:700px;">
   <div class="card">
-    <h3 style="font-size:17px; margin-bottom:20px;">Parásitos (2019)</h3>
+    <h3 id="titulo-pelicula" style="font-size:17px; margin-bottom:20px;"></h3>
 
     <form id="resena-form">
       <div class="field">
         <label>Tu calificación</label>
-        <div class="star-input" data-value="4">
-          <i class="ti ti-star-filled filled"></i>
-          <i class="ti ti-star-filled filled"></i>
-          <i class="ti ti-star-filled filled"></i>
-          <i class="ti ti-star-filled filled"></i>
+        <div class="star-input" data-value="0">
+          <i class="ti ti-star"></i>
+          <i class="ti ti-star"></i>
+          <i class="ti ti-star"></i>
+          <i class="ti ti-star"></i>
           <i class="ti ti-star"></i>
         </div>
       </div>
@@ -57,18 +57,9 @@
 </div>
 
 <script src="../js/main.js"></script>
+<script src="../js/api.js"></script>
 <script src="../js/stars.js"></script>
-<script>
-  //reemplaza con POST /api/resenas { peliculaId, calificacion, titulo, texto }
-  document.getElementById('resena-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const calificacion = document.querySelector('.star-input').dataset.value;
-    if (!calificacion || calificacion === '0') {
-      alert('Selecciona una calificación antes de publicar.');
-      return;
-    }
-    window.location.href = 'detalle.html';
-  });
-</script>
+<script src="../js/resenas.js"></script>
+
 </body>
 </html>

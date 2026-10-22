@@ -24,6 +24,8 @@ app.use('/css', express.static(path.join(__dirname, 'cinescore', 'css')));
 app.use('/js', express.static(path.join(__dirname, 'cinescore', 'js')));
 app.use(express.static(path.join(__dirname, 'cinescore', 'html')));
 app.use('/html', express.static(path.join(__dirname, 'cinescore', 'html')));
+//Pa las estrellitas
+app.use('/vendor/tabler', express.static(path.join(__dirname, 'node_modules', '@tabler', 'icons-webfont')));
 
 // Pa conectar a MongoDB pa Compass
 mongoose.connect(process.env.MONGO_URI)
@@ -38,6 +40,7 @@ app.get('/', (req, res) => {
 //Rutas de la API
 app.use('/api/auth', require('./cinescore/routes/auth'));
 app.use('/api/peliculas', require('./cinescore/routes/peliculas'));
+app.use('/api/resenas', require('./cinescore/routes/resenas'));
 
 //Servidor funcionando
 app.listen(PORT, () => {

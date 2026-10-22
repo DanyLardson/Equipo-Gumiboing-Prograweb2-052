@@ -1,23 +1,5 @@
-// Pide las películas al servidor y las pinta en explorar.html
-
 let generoActivo = 'Todos';
 let temporizador;
-
-// Evita que un título como <script> se ejecute en el navegador
-function escapar(texto) {
-  return String(texto ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-// 4.3 -> ★★★★☆
-function estrellas(numero) {
-  const llenas = Math.round(numero || 0);
-  return '★'.repeat(llenas) + '☆'.repeat(5 - llenas);
-}
 
 function crearTarjeta(peli) {
   const titulo = escapar(peli.titulo);
