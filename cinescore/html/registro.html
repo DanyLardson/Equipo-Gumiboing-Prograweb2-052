@@ -44,18 +44,6 @@
 </div>
 
 <script src="../js/main.js"></script>
-<script>
-  //reemplaza con POST /api/auth/registro { username, email, password }
-  document.getElementById('registro-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const p1 = document.getElementById('password').value;
-    const p2 = document.getElementById('password2').value;
-    if (p1 !== p2) {
-      alert('Las contraseñas no coinciden.');
-      return;
-    }
-    window.location.href = 'explorar.html';
-  });
-</script>
+<script src="../js/auth.js"></script>
 </body>
 </html>

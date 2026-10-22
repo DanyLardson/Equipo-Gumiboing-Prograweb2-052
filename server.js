@@ -1,7 +1,14 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session');
 const path = require('path'); //libreria de Node.js para ayudar con las rutas de carpetas
+
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
 
 const app = express();
 const PORT = 3000;
@@ -27,6 +34,9 @@ mongoose.connect(process.env.MONGO_URI)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'cinescore', 'html', 'explorar.html')); 
 });
+
+//Rutas de la API
+app.use('/api/auth', require('./cinescore/routes/auth'));
 
 //Servidor funcionando
 app.listen(PORT, () => {
