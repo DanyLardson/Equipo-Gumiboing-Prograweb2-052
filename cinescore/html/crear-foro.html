@@ -33,13 +33,8 @@
       <div class="field">
         <label for="pelicula">Película o serie</label>
         <select id="pelicula" required>
-          <option value="" disabled selected>Selecciona un título ya agregado...</option>
-          <option value="parasitos">Parásitos (2019)</option>
-          <option value="oppenheimer">Oppenheimer (2023)</option>
-          <option value="lalaland">La La Land (2016)</option>
-          <option value="padrino">El Padrino (1972)</option>
-          <option value="coco">Coco (2017)</option>
-        </select>
+        <option value="" disabled selected>Selecciona un título ya agregado...</option>
+</select>
       </div>
 
       <div class="field">
@@ -61,12 +56,8 @@
 </div>
 
 <script src="../js/main.js"></script>
-<script>
-  //reemplaza con POST /api/foros { peliculaId, titulo, mensajeInicial }
-  document.getElementById('crear-foro-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    window.location.href = 'foro.html';
-  });
-</script>
+<script src="../js/api.js"></script>
+<script src="../js/crear-foro.js"></script>
+
 </body>
 </html>

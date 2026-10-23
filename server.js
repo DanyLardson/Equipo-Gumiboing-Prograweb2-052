@@ -39,7 +39,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 //Ruta para poner la ventana principal y entrr a http://localhost:3000
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'cinescore', 'html', 'explorar.html'));
+  res.sendFile(path.join(__dirname, 'cinescore', 'html', 'login.html'));
 });
 
 // Todo /api requiere sesión, menos registro y login
@@ -54,6 +54,7 @@ app.use('/api/chat', require('./cinescore/routes/chat'));
 app.use('/api/amigos', require('./cinescore/routes/amigos'));
 app.use('/api/comentarios', require('./cinescore/routes/comentarios'));
 app.use('/api/usuarios', require('./cinescore/routes/usuarios'));
+app.use('/api/amigos', require('./cinescore/routes/amigos'));
 
 //Servidor funcionando
 app.listen(PORT, () => {

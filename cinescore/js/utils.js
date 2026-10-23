@@ -32,3 +32,13 @@ function haceTiempo(fecha) {
   }
   return 'Hace un momento';
 }
+
+// Devuelve el avatar de un usuario: su foto si tiene, o el círculo gris
+function avatarHTML(usuario, tamano = 38) {
+  const medida = `width:${tamano}px; height:${tamano}px;`;
+  if (usuario && usuario.avatar) {
+    return `<img class="avatar" src="${escapar(usuario.avatar)}" alt="" style="${medida} object-fit:cover;"
+      onerror="this.onerror=null;this.removeAttribute('src');">`;
+  }
+  return `<div class="avatar" style="${medida}"></div>`;
+}

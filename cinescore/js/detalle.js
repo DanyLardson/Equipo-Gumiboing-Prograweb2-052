@@ -20,7 +20,7 @@ function crearResena(r) {
   return `
     <div class="dark-panel" style="padding:18px; margin-bottom:12px;">
       <div style="display:flex; gap:12px;">
-        <div class="avatar"></div>
+                ${avatarHTML(r.usuario, 34)}
         <div>
           <p style="font-weight:600; margin:0;">${nombre} <span class="stars">${estrellas(r.calificacion)}</span></p>
           <p style="font-weight:600; margin:6px 0 0;">${escapar(r.titulo)}</p>
@@ -69,6 +69,7 @@ async function cargarPelicula() {
     `${estrellas(peli.promedioCalificacion)} ${peli.promedioCalificacion} / 5 · ${peli.totalResenas} reseñas`;
 
   document.getElementById('btn-resena').href = 'escribir-resena.html?id=' + peli._id;
+  document.getElementById('btn-foros').href = 'foros.html?pelicula=' + peli._id;
 }
 
 async function cargarResenas() {
