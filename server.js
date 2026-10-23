@@ -1,4 +1,5 @@
 require('dotenv').config();
+console.log('Servidor corriendo desde:', __dirname);
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -43,6 +44,10 @@ app.get('/', (req, res) => {
 });
 
 // Todo /api requiere sesión, menos registro y login
+app.use('/api', (req, res, next) => {
+  console.log(req.method, req.originalUrl);
+  next();
+});
 app.use('/api', protegerApi);
 
 //Rutas de la API

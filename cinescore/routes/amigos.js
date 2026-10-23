@@ -5,12 +5,11 @@ const { requireLogin } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Escapa los símbolos especiales para usar el texto del buscador dentro de un $regex
 function escaparRegex(texto) {
   return texto.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// GET /api/amigos -> mis amigos y mis solicitudes pendientes
+// GET /api/amigos  mis amigos y mis solicitudes pendientes
 router.get('/', requireLogin, async (req, res) => {
   try {
     const yo = req.session.userId;
@@ -45,7 +44,7 @@ router.get('/', requireLogin, async (req, res) => {
   }
 });
 
-// GET /api/amigos/buscar?q=texto -> usuarios y su relación conmigo
+// GET /api/amigos/buscar usuarios y su relación conmigo
 router.get('/buscar', requireLogin, async (req, res) => {
   try {
     const yo = req.session.userId;
@@ -57,7 +56,7 @@ router.get('/buscar', requireLogin, async (req, res) => {
     const usuarios = await Usuario.find(filtro).select('username avatar').limit(20);
     const ids = usuarios.map(u => u._id);
 
-    // Relación con cada uno (en cualquiera de las dos direcciones)
+    // Relación con cada uno 
     const amistades = await Amistad.find({
       estado: { $in: ['pendiente', 'aceptada'] },
       $or: [
@@ -98,7 +97,7 @@ router.get('/buscar', requireLogin, async (req, res) => {
   }
 });
 
-// POST /api/amigos  { destinatario } -> enviar solicitud
+// POST /api/amigos   enviar solicitud
 router.post('/', requireLogin, async (req, res) => {
   try {
     const yo = req.session.userId;
@@ -137,7 +136,7 @@ router.post('/', requireLogin, async (req, res) => {
   }
 });
 
-// PUT /api/amigos/:id  { estado: 'aceptada' | 'rechazada' } -> responder una solicitud
+// PUT /api/amigos/:id  responder una solicitud
 router.put('/:id', requireLogin, async (req, res) => {
   try {
     const yo = req.session.userId;
@@ -167,7 +166,7 @@ router.put('/:id', requireLogin, async (req, res) => {
       return res.json(amistad);
     }
 
-    // Rechazada: se borra para que en el futuro puedan volver a intentarlo
+    // Rechazada
     await amistad.deleteOne();
     res.json({ mensaje: 'Solicitud rechazada' });
   } catch (err) {
