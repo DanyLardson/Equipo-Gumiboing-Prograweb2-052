@@ -1,4 +1,9 @@
 {
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
   "dependencies": {
     "@tabler/icons-webfont": "^2.44.0",
     "bcrypt": "^6.0.0",

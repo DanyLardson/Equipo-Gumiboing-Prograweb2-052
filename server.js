@@ -1,12 +1,21 @@
 require('dotenv').config();
 console.log('Servidor corriendo desde:', __dirname);
+
+// Si falta alguna variable del .env, avisamos claro y salimos (en vez de fallar raro después)
+const variablesRequeridas = ['MONGO_URI', 'SESSION_SECRET'];
+const faltantes = variablesRequeridas.filter(v => !process.env[v]);
+if (faltantes.length) {
+  console.error(`❌ Faltan variables en el archivo .env: ${faltantes.join(', ')}`);
+  console.error('   Copia .env.example como .env y llena los valores.');
+  process.exit(1);
+}
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const path = require('path'); //libreria de Node.js para ayudar con las rutas de carpetas
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Carga los modelos (así Mongoose crea las colecciones)
 require('./cinescore/models');
@@ -59,7 +68,6 @@ app.use('/api/chat', require('./cinescore/routes/chat'));
 app.use('/api/amigos', require('./cinescore/routes/amigos'));
 app.use('/api/comentarios', require('./cinescore/routes/comentarios'));
 app.use('/api/usuarios', require('./cinescore/routes/usuarios'));
-app.use('/api/amigos', require('./cinescore/routes/amigos'));
 
 //Servidor funcionando
 app.listen(PORT, () => {
