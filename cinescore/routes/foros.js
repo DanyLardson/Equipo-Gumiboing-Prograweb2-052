@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../utils/logger');
 const mongoose = require('mongoose');
 const { Foro, MensajeForo, Pelicula } = require('../models');
 const { requireLogin } = require('../middleware/auth');
@@ -46,7 +47,7 @@ router.get('/', async (req, res) => {
       }))
     });
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -87,7 +88,7 @@ router.get('/:id', async (req, res) => {
       }))
     });
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -125,7 +126,7 @@ router.post('/', requireLogin, async (req, res) => {
     if (err.name === 'ValidationError') {
       return res.status(400).json({ error: err.message });
     }
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -159,7 +160,7 @@ router.post('/:id/mensajes', requireLogin, async (req, res) => {
     if (err.name === 'ValidationError') {
       return res.status(400).json({ error: err.message });
     }
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -182,7 +183,7 @@ router.post('/mensajes/:id/like', requireLogin, async (req, res) => {
 
     res.json({ liked: !yaLeDio, likes: mensaje.likes.length });
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });

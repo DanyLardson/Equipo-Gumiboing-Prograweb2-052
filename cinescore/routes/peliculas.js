@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../utils/logger');
 const mongoose = require('mongoose');
 const { Pelicula } = require('../models');
 const { requireLogin } = require('../middleware/auth');
@@ -21,7 +22,7 @@ router.get('/', async (req, res) => {
     const peliculas = await Pelicula.find(filtro).sort({ createdAt: -1 });
     res.json(peliculas);
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -38,7 +39,7 @@ router.get('/:id', async (req, res) => {
 
     res.json(peli);
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -66,7 +67,7 @@ router.post('/', requireLogin, async (req, res) => {
     if (err.name === 'ValidationError') {
       return res.status(400).json({ error: err.message });
     }
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });

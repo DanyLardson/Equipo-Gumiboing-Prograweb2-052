@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../utils/logger');
 const mongoose = require('mongoose');
 const { Comentario, Resena } = require('../models');
 const { requireLogin } = require('../middleware/auth');
@@ -31,7 +32,7 @@ router.get('/', async (req, res) => {
 
     res.json(comentarios.map(c => formatear(c, req.session.userId)));
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -65,7 +66,7 @@ router.post('/', requireLogin, async (req, res) => {
     if (err.name === 'ValidationError') {
       return res.status(400).json({ error: err.message });
     }
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -88,7 +89,7 @@ router.post('/:id/like', requireLogin, async (req, res) => {
 
     res.json({ liked: !yaLeDio, likes: comentario.likes.length });
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });

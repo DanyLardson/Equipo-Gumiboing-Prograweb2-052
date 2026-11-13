@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../utils/logger');
 const mongoose = require('mongoose');
 const { Resena, Pelicula, Comentario } = require('../models');
 const { requireLogin } = require('../middleware/auth');
@@ -7,6 +8,7 @@ const router = express.Router();
 
 // Recalcula promedio y total de reseñas de una película
 async function recalcular(peliculaId) {
+  logger.info('Recalculando promedio de película', { peliculaId: String(peliculaId) });
   const [r] = await Resena.aggregate([
     { $match: { pelicula: new mongoose.Types.ObjectId(peliculaId) } },
     { $group: { _id: '$pelicula', promedio: { $avg: '$calificacion' }, total: { $sum: 1 } } }
@@ -49,7 +51,7 @@ router.get('/', async (req, res) => {
       yoLeDiLike: !!yo && r.likes.some(u => u.toString() === yo)
     })));
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -83,7 +85,7 @@ router.post('/', requireLogin, async (req, res) => {
     if (err.name === 'ValidationError') {
       return res.status(400).json({ error: err.message });
     }
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -106,7 +108,7 @@ router.post('/:id/like', requireLogin, async (req, res) => {
 
     res.json({ liked: !yaLeDio, likes: resena.likes.length });
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });

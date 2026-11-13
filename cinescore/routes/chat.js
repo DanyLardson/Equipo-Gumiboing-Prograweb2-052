@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../utils/logger');
 const mongoose = require('mongoose');
 const { Conversacion, MensajeChat, Amistad } = require('../models');
 const { requireLogin } = require('../middleware/auth');
@@ -42,7 +43,7 @@ router.get('/no-leidos', requireLogin, async (req, res) => {
 
     res.json(Object.fromEntries(conteos.map(c => [c._id.toString(), c.total])));
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -72,7 +73,7 @@ router.post('/', requireLogin, async (req, res) => {
 
     res.json({ _id: conv._id });
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -107,7 +108,7 @@ router.get('/:id/mensajes', requireLogin, async (req, res) => {
       }))
     });
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -135,7 +136,7 @@ router.post('/:id/mensajes', requireLogin, async (req, res) => {
 
     res.status(201).json(mensaje);
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });

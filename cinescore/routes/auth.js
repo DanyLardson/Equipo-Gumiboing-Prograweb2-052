@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../utils/logger');
 const bcrypt = require('bcrypt');
 const { Usuario } = require('../models');
 const { requireLogin } = require('../middleware/auth');
@@ -19,13 +20,14 @@ router.post('/registro', async (req, res) => {
 
     const hash = await bcrypt.hash(password, 10);
     await Usuario.create({ username, email, password: hash });
+    logger.info('Usuario registrado', { username, email });
 
     res.status(201).json({ mensaje: 'Cuenta creada' });
   } catch (err) {
     if (err.code === 11000) {
       return res.status(409).json({ error: 'Ese correo o usuario ya está registrado' });
     }
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -43,21 +45,24 @@ router.post('/login', async (req, res) => {
     const ok = usuario && await bcrypt.compare(password, usuario.password);
 
     if (!ok) {
+      logger.warn('Intento de login fallido', { email });
       return res.status(401).json({ error: 'Correo o contraseña incorrectos' });
     }
 
     req.session.userId = usuario._id.toString();
     req.session.rol = usuario.rol;
+    logger.info('Login exitoso', { userId: usuario._id.toString(), rol: usuario.rol });
 
     res.json({ mensaje: 'Bienvenido', username: usuario.username, rol: usuario.rol });
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
 
 // POST /api/auth/logout
 router.post('/logout', (req, res) => {
+  logger.info('Logout', { userId: req.session.userId });
   req.session.destroy(() => {
     res.clearCookie('connect.sid');
     res.json({ mensaje: 'Sesión cerrada' });

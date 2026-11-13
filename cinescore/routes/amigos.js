@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../utils/logger');
 const mongoose = require('mongoose');
 const { Amistad, Usuario, Resena } = require('../models');
 const { requireLogin } = require('../middleware/auth');
@@ -39,7 +40,7 @@ router.get('/', requireLogin, async (req, res) => {
 
     res.json({ amigos, recibidas, enviadas });
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -92,7 +93,7 @@ router.get('/buscar', requireLogin, async (req, res) => {
       };
     }));
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -131,7 +132,7 @@ router.post('/', requireLogin, async (req, res) => {
     if (err.code === 11000) {
       return res.status(409).json({ error: 'Ya existe una solicitud con este usuario' });
     }
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -170,7 +171,7 @@ router.put('/:id', requireLogin, async (req, res) => {
     await amistad.deleteOne();
     res.json({ mensaje: 'Solicitud rechazada' });
   } catch (err) {
-    console.error(err);
+    logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
