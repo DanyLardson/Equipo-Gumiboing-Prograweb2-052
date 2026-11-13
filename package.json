@@ -2,7 +2,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "seed": "node cinescore/utils/seed.js"
   },
   "dependencies": {
     "@tabler/icons-webfont": "^2.44.0",

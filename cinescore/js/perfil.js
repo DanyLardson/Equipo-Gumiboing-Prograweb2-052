@@ -41,6 +41,12 @@ async function cargarPerfil() {
   const data = await res.json();
   if (!res.ok) throw new Error(data.error);
 
+  // Si es admin, el menú de arriba es el de admin
+  if (data.usuario.rol === 'admin') {
+    sessionStorage.setItem('rol', 'admin');
+    aplicarNavAdmin();
+  }
+
   pintarUsuario(data.usuario);
   document.getElementById('stat-resenas').textContent = data.stats.resenas;
   document.getElementById('stat-comentarios').textContent = data.stats.comentarios;
@@ -50,7 +56,7 @@ async function cargarPerfil() {
     ? data.recientes.map(crearReciente).join('')
     : '<p style="color:#7a7a72;">Aún no has escrito reseñas.</p>';
 
-  // Datos actuales para el formulario de edición
+  
   document.getElementById('input-bio').value = data.usuario.bio || '';
   document.getElementById('input-avatar').value = data.usuario.avatar || '';
 }
@@ -81,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btn-logout').addEventListener('click', async () => {
     await postJSON('/api/auth/logout');
+    sessionStorage.removeItem('rol');
     window.location.href = 'login.html';
   });
 

@@ -35,7 +35,8 @@ if (loginForm) {
     const { ok, data } = await postJSON('/api/auth/login', { email, password });
 
     if (ok) {
-      window.location.href = 'explorar.html';
+      sessionStorage.setItem('rol', data.rol);
+      window.location.href = data.rol === 'admin' ? 'admin.html' : 'explorar.html';
     } else {
       alert(data.error);
     }
