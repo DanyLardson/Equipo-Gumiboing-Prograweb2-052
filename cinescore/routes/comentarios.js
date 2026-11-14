@@ -3,6 +3,9 @@ const logger = require('../utils/logger');
 const mongoose = require('mongoose');
 const { Comentario, Resena } = require('../models');
 const { requireLogin } = require('../middleware/auth');
+const { puedeModificar, usuarioActual } = require('../utils/permisos');
+const { validarComentario } = require('../utils/validaciones');
+const { borrarComentarios } = require('../utils/cascada');
 
 const router = express.Router();
 
@@ -12,13 +15,14 @@ function formatear(c, yo) {
     _id: c._id,
     texto: c.texto,
     createdAt: c.createdAt,
+    updatedAt: c.updatedAt,
     usuario: c.usuario,
     likes: c.likes.length,
     yoLeDiLike: !!yo && c.likes.some(u => u.toString() === yo)
   };
 }
 
-// GET /api/comentarios
+// GET /api/comentarios?resena=ID  (los comentarios de una reseña)
 router.get('/', async (req, res) => {
   try {
     const { resena } = req.query;
@@ -37,35 +41,107 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /api/comentarios 
+// GET /api/comentarios/:id  (uno solo)
+router.get('/:id', async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Id inválido' });
+    }
+
+    const c = await Comentario.findById(req.params.id).populate('usuario', 'username avatar');
+    if (!c) return res.status(404).json({ error: 'Comentario no encontrado' });
+
+    res.json({ ...formatear(c, req.session.userId), resena: c.resena });
+  } catch (err) {
+    logger.error(`${req.method} ${req.originalUrl}`, err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// POST /api/comentarios
 router.post('/', requireLogin, async (req, res) => {
   try {
-    const { resena, texto } = req.body;
+    const { resena } = req.body;
 
     if (!mongoose.isValidObjectId(resena)) {
       return res.status(400).json({ error: 'Reseña inválida' });
     }
-    if (!texto || !texto.trim()) {
-      return res.status(400).json({ error: 'El comentario está vacío' });
-    }
-    if (texto.length > 500) {
-      return res.status(400).json({ error: 'El comentario es muy largo (máximo 500 caracteres)' });
-    }
+    const { error, datos } = validarComentario(req.body);
+    if (error) return res.status(400).json({ error });
+
     if (!(await Resena.exists({ _id: resena }))) {
       return res.status(404).json({ error: 'Reseña no encontrada' });
     }
 
     const nuevo = await Comentario.create({
+      ...datos,
       resena,
-      texto: texto.trim(),
-      usuario: req.session.userId
+      usuario: usuarioActual(req).id
     });
 
+    logger.info('Comentario creado', { comentarioId: nuevo._id.toString(), resenaId: resena });
     res.status(201).json(nuevo);
   } catch (err) {
     if (err.name === 'ValidationError') {
       return res.status(400).json({ error: err.message });
     }
+    logger.error(`${req.method} ${req.originalUrl}`, err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// PUT /api/comentarios/:id  (solo su autor o un admin)
+router.put('/:id', requireLogin, async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Id inválido' });
+    }
+
+    const comentario = await Comentario.findById(req.params.id);
+    if (!comentario) return res.status(404).json({ error: 'Comentario no encontrado' });
+
+    if (!puedeModificar(req, comentario.usuario)) {
+      logger.warn('Intento de editar comentario ajeno', { comentarioId: req.params.id, por: usuarioActual(req).id });
+      return res.status(403).json({ error: 'No puedes editar este comentario' });
+    }
+
+    const { error, datos } = validarComentario(req.body);
+    if (error) return res.status(400).json({ error });
+
+    comentario.set(datos);
+    await comentario.save();
+
+    logger.info('Comentario actualizado', { comentarioId: req.params.id, por: usuarioActual(req).id });
+    res.json(comentario);
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ error: err.message });
+    }
+    logger.error(`${req.method} ${req.originalUrl}`, err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// DELETE /api/comentarios/:id  (solo su autor o un admin)
+router.delete('/:id', requireLogin, async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Id inválido' });
+    }
+
+    const comentario = await Comentario.findById(req.params.id);
+    if (!comentario) return res.status(404).json({ error: 'Comentario no encontrado' });
+
+    if (!puedeModificar(req, comentario.usuario)) {
+      logger.warn('Intento de borrar comentario ajeno', { comentarioId: req.params.id, por: usuarioActual(req).id });
+      return res.status(403).json({ error: 'No puedes eliminar este comentario' });
+    }
+
+    await borrarComentarios({ _id: comentario._id });
+
+    logger.info('Comentario eliminado', { comentarioId: req.params.id, por: usuarioActual(req).id });
+    res.json({ mensaje: 'Comentario eliminado' });
+  } catch (err) {
     logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
