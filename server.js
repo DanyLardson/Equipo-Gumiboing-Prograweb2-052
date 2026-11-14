@@ -81,15 +81,16 @@ app.use('/api/chat', require('./cinescore/routes/chat'));
 app.use('/api/amigos', require('./cinescore/routes/amigos'));
 app.use('/api/comentarios', require('./cinescore/routes/comentarios'));
 app.use('/api/usuarios', require('./cinescore/routes/usuarios'));
+app.use('/api/reportes', require('./cinescore/routes/reportes'));
 
-// Cualquier ruta /api que no exista responde JSON (no HTML)
+// Cualquier ruta /api que no exista responde JSON 
 app.use('/api', (req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
-// Manejador global de errores: lo que no capturó una ruta termina aquí
+// Manejador global de errores
 app.use((err, req, res, next) => {
-  // JSON mal formado en el body
+
   if (err.type === 'entity.parse.failed') {
     logger.warn(`JSON inválido en ${req.method} ${req.originalUrl}`);
     return res.status(400).json({ error: 'El cuerpo de la petición no es un JSON válido' });
@@ -104,7 +105,7 @@ const server = app.listen(PORT, () => {
   logger.info(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
-// Apagado ordenado (Ctrl+C o cierre del proceso): queda registrado el fin
+// Apagado o
 async function apagar(senal) {
   logger.info(`Señal ${senal} recibida: cerrando servidor`);
   server.close(async () => {

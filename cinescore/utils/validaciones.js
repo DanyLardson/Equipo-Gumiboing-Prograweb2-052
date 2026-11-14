@@ -76,6 +76,35 @@ function validarMensajeForo(body = {}) {
   return { datos: { texto: cuerpo } };
 }
 
+// Deben coincidir con los enum de models/Reporte.js
+const TIPOS_REPORTE = ['Resena', 'Comentario', 'MensajeForo'];
+const ESTADOS_REPORTE = ['pendiente', 'revisado', 'eliminado'];
+
+function validarReporte(body = {}) {
+  const tipo = texto(body.tipo);
+  const contenido = texto(body.contenido);
+  const razon = texto(body.razon);
+
+  if (!TIPOS_REPORTE.includes(tipo)) return { error: 'Tipo de contenido inválido' };
+  if (!/^[0-9a-fA-F]{24}$/.test(contenido)) return { error: 'Contenido inválido' };
+  if (!razon) return { error: 'Indica el motivo del reporte' };
+  if (razon.length > 300) return { error: 'El motivo es muy largo (máximo 300 caracteres)' };
+
+  return { datos: { tipo, contenido, razon } };
+}
+
+// El admin solo puede alternar entre pendiente y revisado.
+// "eliminado" se asigna únicamente al borrar el contenido reportado.
+function validarEstadoReporte(body = {}) {
+  const estado = texto(body.estado);
+  if (!['pendiente', 'revisado'].includes(estado)) {
+    return { error: 'Estado inválido (usa "pendiente" o "revisado")' };
+  }
+  return { datos: { estado } };
+}
+
 module.exports = {
-  GENEROS, validarPelicula, validarResena, validarComentario, validarForo, validarMensajeForo
+  GENEROS, TIPOS_REPORTE, ESTADOS_REPORTE,
+  validarPelicula, validarResena, validarComentario, validarForo, validarMensajeForo,
+  validarReporte, validarEstadoReporte
 };
