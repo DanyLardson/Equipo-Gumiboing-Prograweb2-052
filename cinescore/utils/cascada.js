@@ -1,10 +1,4 @@
 // Borrado en cascada: al borrar algo también se borra lo que depende de eso
-// (y los reportes que apuntaban a ese contenido, para que no queden huérfanos).
-//
-// Nota: MongoDB local sin réplica no soporta transacciones, así que el borrado
-// va por pasos (de lo más "hijo" a lo más "padre"). Si algo falla a la mitad,
-// queda registrado en el log y se puede volver a intentar.
-
 const {
   Pelicula, Resena, Comentario, Foro, MensajeForo, Reporte
 } = require('../models');

@@ -1,7 +1,4 @@
 // Validaciones del back end (independientes de las del front).
-// Cada función devuelve { error, datos }: si "error" trae texto, no se debe guardar.
-
-// Debe coincidir con el enum de models/Pelicula.js
 const GENEROS = ['Drama', 'Ciencia ficción', 'Comedia', 'Suspenso', 'Terror', 'Acción', 'Animación'];
 
 function texto(valor) {
@@ -57,4 +54,28 @@ function validarComentario(body = {}) {
   return { datos: { texto: cuerpo } };
 }
 
-module.exports = { GENEROS, validarPelicula, validarResena, validarComentario };
+function validarForo(body = {}) {
+  const titulo = texto(body.titulo);
+  const descripcion = texto(body.descripcion);
+
+  if (!titulo) return { error: 'Falta el título del foro' };
+  if (titulo.length > 150) return { error: 'El título es muy largo (máximo 150 caracteres)' };
+  if (descripcion.length > 2000) {
+    return { error: 'El mensaje inicial es muy largo (máximo 2000 caracteres)' };
+  }
+
+  return { datos: { titulo, descripcion } };
+}
+
+function validarMensajeForo(body = {}) {
+  const cuerpo = texto(body.texto);
+
+  if (!cuerpo) return { error: 'El mensaje está vacío' };
+  if (cuerpo.length > 1000) return { error: 'El mensaje es muy largo (máximo 1000 caracteres)' };
+
+  return { datos: { texto: cuerpo } };
+}
+
+module.exports = {
+  GENEROS, validarPelicula, validarResena, validarComentario, validarForo, validarMensajeForo
+};
