@@ -11,8 +11,9 @@ process.on('unhandledRejection', (reason) => {
   logger.error('unhandledRejection', reason instanceof Error ? reason : { reason: String(reason) });
 });
 
-// Si falta alguna variable del .env, avisamos claro y salimos (en vez de fallar raro después)
-const variablesRequeridas = ['MONGO_URI', 'SESSION_SECRET'];
+// Si falta alguna variable del .env avisa
+const variablesRequeridas = ['MONGO_URI', 'JWT_SECRET'];
+if (process.env.PERMITIR_SESION !== 'false') variablesRequeridas.push('SESSION_SECRET');
 const faltantes = variablesRequeridas.filter(v => !process.env[v]);
 if (faltantes.length) {
   logger.error(`Faltan variables en el archivo .env: ${faltantes.join(', ')}`);
@@ -27,22 +28,24 @@ const path = require('path'); //libreria de Node.js para ayudar con las rutas de
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Carga los modelos (así Mongoose crea las colecciones)
+// Carga los modelos
 require('./cinescore/models');
-const { protegerPaginas, protegerApi } = require('./cinescore/middleware/auth');
+const { protegerPaginas, protegerApi, identificar, sesionPermitida } = require('./cinescore/middleware/auth');
 
 //formularios
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//sesiones (deben ir antes de las rutas)
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false
-}));
+// Sesiones
+if (sesionPermitida()) {
+  app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false
+  }));
+}
 
-// Sin sesión, las páginas mandan al login (debe ir antes de los express.static)
+// Sin sesión, las páginas mandan al login
 app.use(protegerPaginas);
 
 //Para hacer las carpetas publicas
@@ -65,11 +68,12 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'cinescore', 'html', 'login.html'));
 });
 
-// Todo /api requiere sesión, menos registro y login
+// Todo /api requiere un token válido, menos registro y login
 app.use('/api', (req, res, next) => {
   console.log(req.method, req.originalUrl);
   next();
 });
+app.use('/api', identificar);
 app.use('/api', protegerApi);
 
 //Rutas de la API
@@ -84,14 +88,13 @@ app.use('/api/usuarios', require('./cinescore/routes/usuarios'));
 app.use('/api/reportes', require('./cinescore/routes/reportes'));
 app.use('/api/estadisticas', require('./cinescore/routes/estadisticas'));
 
-// Cualquier ruta /api que no exista responde JSON (no HTML)
+// Cualquier ruta /api que no exista responde JSON 
 app.use('/api', (req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
-// Manejador global de errores: lo que no capturó una ruta termina aquí
+// manejador global de errores. (lo que no capturó una ruta termina aquí)
 app.use((err, req, res, next) => {
-  // JSON mal formado en el body
   if (err.type === 'entity.parse.failed') {
     logger.warn(`JSON inválido en ${req.method} ${req.originalUrl}`);
     return res.status(400).json({ error: 'El cuerpo de la petición no es un JSON válido' });
@@ -106,7 +109,7 @@ const server = app.listen(PORT, () => {
   logger.info(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
-// Apagado ordenado (Ctrl+C o cierre del proceso): queda registrado el fin
+// Apagado ordenado ctrl c
 async function apagar(senal) {
   logger.info(`Señal ${senal} recibida: cerrando servidor`);
   server.close(async () => {

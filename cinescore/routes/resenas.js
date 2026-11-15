@@ -9,7 +9,7 @@ const { borrarResenas } = require('../utils/cascada');
 
 const router = express.Router();
 
-// Recalcula promedio y total de reseñas de una película
+// recalcula promedio y total de reseñas de una película
 async function recalcular(peliculaId) {
   logger.info('Recalculando promedio de película', { peliculaId: String(peliculaId) });
   const [r] = await Resena.aggregate([
@@ -22,7 +22,7 @@ async function recalcular(peliculaId) {
   });
 }
 
-// GET /api/resenas?pelicula=ID  (las reseñas de una película)
+// GET /api/resenas?pelicula=ID  las reseñas de una película
 router.get('/', async (req, res) => {
   try {
     const { pelicula } = req.query;
@@ -34,14 +34,14 @@ router.get('/', async (req, res) => {
       .populate('usuario', 'username avatar')
       .sort({ createdAt: -1 });
 
-    // Cuántos comentarios tiene cada reseña
+    // cuántos comentarios tiene cada reseña
     const conteos = await Comentario.aggregate([
       { $match: { resena: { $in: resenas.map(r => r._id) } } },
       { $group: { _id: '$resena', total: { $sum: 1 } } }
     ]);
     const totales = new Map(conteos.map(c => [c._id.toString(), c.total]));
 
-    const yo = req.session.userId;
+    const yo = req.user.id;
     res.json(resenas.map(r => ({
       _id: r._id,
       titulo: r.titulo,
@@ -59,7 +59,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/resenas/:id  (una sola reseña)
+// GET /api/resenas/:id  una sola reseña
 router.get('/:id', async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -71,7 +71,7 @@ router.get('/:id', async (req, res) => {
       .populate('pelicula', 'titulo anio');
     if (!r) return res.status(404).json({ error: 'Reseña no encontrada' });
 
-    const yo = req.session.userId;
+    const yo = req.user.id;
     res.json({
       _id: r._id,
       titulo: r.titulo,
@@ -90,7 +90,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST /api/resenas  (se necesita login)
+// POST /api/resenas  se necesita login
 router.post('/', requireLogin, async (req, res) => {
   try {
     const { pelicula } = req.body;
@@ -126,7 +126,7 @@ router.post('/', requireLogin, async (req, res) => {
   }
 });
 
-// PUT /api/resenas/:id  (solo su autor o un admin)
+// PUT /api/resenas/:id  solo su autor o un admin
 router.put('/:id', requireLogin, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -159,8 +159,7 @@ router.put('/:id', requireLogin, async (req, res) => {
   }
 });
 
-// DELETE /api/resenas/:id  (solo su autor o un admin)
-// También borra sus comentarios y los reportes que apuntaban a ella.
+// DELETE /api/resenas/:id  solo su autor o un admin
 router.delete('/:id', requireLogin, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -187,7 +186,7 @@ router.delete('/:id', requireLogin, async (req, res) => {
   }
 });
 
-// POST /api/resenas/:id/like  -> da o quita like
+// POST /api/resenas/:id/like  da o quita like
 router.post('/:id/like', requireLogin, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -196,7 +195,7 @@ router.post('/:id/like', requireLogin, async (req, res) => {
     const resena = await Resena.findById(req.params.id);
     if (!resena) return res.status(404).json({ error: 'Reseña no encontrada' });
 
-    const yo = req.session.userId;
+    const yo = req.user.id;
     const yaLeDio = resena.likes.some(u => u.toString() === yo);
 
     if (yaLeDio) resena.likes.pull(yo);

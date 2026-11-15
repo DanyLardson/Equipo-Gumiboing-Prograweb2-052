@@ -9,7 +9,7 @@ const { borrarForos, borrarMensajesForo } = require('../utils/cascada');
 
 const router = express.Router();
 
-// GET /api/foros   
+// GET /api/foros todos los foros
 router.get('/', async (req, res) => {
   try {
     const { pelicula } = req.query;
@@ -54,7 +54,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/foros/:id   (el foro y sus mensajes)
+// GET /api/foros/:id  el foro y sus mensajes
 router.get('/:id', async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -70,7 +70,7 @@ router.get('/:id', async (req, res) => {
       .populate('usuario', 'username avatar')
       .sort({ createdAt: 1 });
 
-    const yo = req.session.userId;
+    const yo = req.user.id;
     res.json({
       foro: {
         _id: foro._id,
@@ -127,7 +127,7 @@ router.post('/', requireLogin, async (req, res) => {
   }
 });
 
-// PUT /api/foros/:id  (solo quien lo creó o un admin)
+// PUT /api/foros/:id  solo quien lo creó o un admin, la película no se puede cambiar
 router.put('/:id', requireLogin, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -159,8 +159,7 @@ router.put('/:id', requireLogin, async (req, res) => {
   }
 });
 
-// DELETE /api/foros/:id  (solo quien lo creó o un admin)
-// También borra sus mensajes y los reportes que apuntaban a ellos.
+// DELETE /api/foros/:id  solo quien lo creó o un admin , tmb borra sus mensajes y los reportes que apuntaban a ellos.
 router.delete('/:id', requireLogin, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -215,7 +214,7 @@ router.post('/:id/mensajes', requireLogin, async (req, res) => {
   }
 });
 
-// GET /api/foros/mensajes/:id  (un solo mensaje)
+// GET /api/foros/mensajes/:id  un solo mensaje
 router.get('/mensajes/:id', async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -225,7 +224,7 @@ router.get('/mensajes/:id', async (req, res) => {
     const m = await MensajeForo.findById(req.params.id).populate('usuario', 'username avatar');
     if (!m) return res.status(404).json({ error: 'Mensaje no encontrado' });
 
-    const yo = req.session.userId;
+    const yo = req.user.id;
     res.json({
       _id: m._id,
       foro: m.foro,
@@ -274,7 +273,7 @@ router.put('/mensajes/:id', requireLogin, async (req, res) => {
   }
 });
 
-// DELETE /api/foros/mensajes/:id  (solo su autor o un admin)
+// DELETE /api/foros/mensajes/:id  solo su autor o un admin
 router.delete('/mensajes/:id', requireLogin, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -299,7 +298,7 @@ router.delete('/mensajes/:id', requireLogin, async (req, res) => {
   }
 });
 
-// POST /api/foros/mensajes/:id/like   (da o quita like a un mensaje)
+// POST /api/foros/mensajes/:id/like  da o quita like a un mensaje
 router.post('/mensajes/:id/like', requireLogin, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -308,7 +307,7 @@ router.post('/mensajes/:id/like', requireLogin, async (req, res) => {
     const mensaje = await MensajeForo.findById(req.params.id);
     if (!mensaje) return res.status(404).json({ error: 'Mensaje no encontrado' });
 
-    const yo = req.session.userId;
+    const yo = req.user.id;
     const yaLeDio = mensaje.likes.some(u => u.toString() === yo);
 
     if (yaLeDio) mensaje.likes.pull(yo);

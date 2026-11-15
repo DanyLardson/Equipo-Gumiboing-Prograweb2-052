@@ -1,13 +1,12 @@
-//quién hace la petición y si puede modificar algo.
 function usuarioActual(req) {
-  return { id: req.session.userId, rol: req.session.rol };
+  return req.user ? { id: req.user.id, rol: req.user.rol } : { id: undefined, rol: undefined };
 }
 
 function esAdmin(req) {
   return usuarioActual(req).rol === 'admin';
 }
 
-// solo puede editar el dueño o admin
+// solo dueños y admin pueden editar
 function puedeModificar(req, duenoId) {
   const u = usuarioActual(req);
   if (u.rol === 'admin') return true;

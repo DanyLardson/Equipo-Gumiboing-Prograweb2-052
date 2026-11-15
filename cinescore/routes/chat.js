@@ -7,7 +7,7 @@ const { validarMensajeChat } = require('../utils/validaciones');
 
 const router = express.Router();
 
-// ¿Son amigos (solicitud aceptada en cualquier dirección)?
+// ¿Son amigos?
 async function sonAmigos(a, b) {
   return !!(await Amistad.exists({
     estado: 'aceptada',
@@ -25,10 +25,10 @@ async function conversacionDe(id, yo) {
     .populate('participantes', 'username avatar');
 }
 
-// GET /api/chat -> mis conversaciones, con el otro usuario, el último mensaje y los no leídos
+// GET /api/chat (mis conversaciones, con el otro usuario, el último mensaje y los no leídos)
 router.get('/', requireLogin, async (req, res) => {
   try {
-    const yo = req.session.userId;
+    const yo = req.user.id;
     const conversaciones = await Conversacion.find({ participantes: yo })
       .populate('participantes', 'username avatar')
       .sort({ updatedAt: -1 });
@@ -74,10 +74,10 @@ router.get('/', requireLogin, async (req, res) => {
   }
 });
 
-// GET /api/chat/no-leidos -> { idDelAmigo: cantidadDeMensajesSinLeer }
+// GET /api/chat/no-leidos
 router.get('/no-leidos', requireLogin, async (req, res) => {
   try {
-    const yo = req.session.userId;
+    const yo = req.user.id;
     const mias = await Conversacion.find({ participantes: yo }).select('_id');
 
     const conteos = await MensajeChat.aggregate([
@@ -98,20 +98,20 @@ router.get('/no-leidos', requireLogin, async (req, res) => {
   }
 });
 
-// POST /api/chat  { destinatario } -> abre (o crea) la conversación con un amigo
+// POST /api/chat el destinatario abre/crea la conversación con un amigo
 router.post('/', requireLogin, async (req, res) => {
   try {
-    const yo = req.session.userId;
+    const yo = req.user.id;
     const { destinatario } = req.body;
 
     if (!mongoose.isValidObjectId(destinatario)) {
       return res.status(400).json({ error: 'Usuario inválido' });
     }
     if (destinatario === yo) {
-      return res.status(400).json({ error: 'No puedes chatear contigo mismo' });
+      return res.status(400).json({ error: 'No puedes chatear contigo mismo tilin' });
     }
     if (!(await sonAmigos(yo, destinatario))) {
-      return res.status(403).json({ error: 'Solo puedes chatear con tus amigos' });
+      return res.status(403).json({ error: 'Solo puedes chatear con tus tilines' });
     }
 
     let conv = await Conversacion.findOne({
@@ -128,10 +128,10 @@ router.post('/', requireLogin, async (req, res) => {
   }
 });
 
-// GET /api/chat/:id/mensajes -> los últimos mensajes (y los marca como leídos)
+// GET /api/chat/:id/mensajes (los últimos mensajes (los marca como leídos))
 router.get('/:id/mensajes', requireLogin, async (req, res) => {
   try {
-    const yo = req.session.userId;
+    const yo = req.user.id;
     const conv = await conversacionDe(req.params.id, yo);
     if (!conv) return res.status(404).json({ error: 'Conversación no encontrada' });
 
@@ -163,10 +163,10 @@ router.get('/:id/mensajes', requireLogin, async (req, res) => {
   }
 });
 
-// POST /api/chat/:id/mensajes  { texto }
+// POST /api/chat/:id/mensajes  el tecto
 router.post('/:id/mensajes', requireLogin, async (req, res) => {
   try {
-    const yo = req.session.userId;
+    const yo = req.user.id;
     const conv = await conversacionDe(req.params.id, yo);
     if (!conv) return res.status(404).json({ error: 'Conversación no encontrada' });
 
@@ -192,10 +192,10 @@ router.post('/:id/mensajes', requireLogin, async (req, res) => {
   }
 });
 
-// PUT /api/chat/mensajes/:id  { texto }  (solo quien lo escribió)
+// PUT /api/chat/mensajes/:id  texto solo de qn lo escribió
 router.put('/mensajes/:id', requireLogin, async (req, res) => {
   try {
-    const yo = req.session.userId;
+    const yo = req.user.id;
     if (!mongoose.isValidObjectId(req.params.id)) {
       return res.status(400).json({ error: 'Id inválido' });
     }
@@ -228,10 +228,10 @@ router.put('/mensajes/:id', requireLogin, async (req, res) => {
   }
 });
 
-// DELETE /api/chat/mensajes/:id  (solo quien lo escribió)
+// DELETE /api/chat/mensajes/:id  solo qn lo escribió
 router.delete('/mensajes/:id', requireLogin, async (req, res) => {
   try {
-    const yo = req.session.userId;
+    const yo = req.user.id;
     if (!mongoose.isValidObjectId(req.params.id)) {
       return res.status(400).json({ error: 'Id inválido' });
     }
@@ -254,10 +254,10 @@ router.delete('/mensajes/:id', requireLogin, async (req, res) => {
   }
 });
 
-// DELETE /api/chat/:id  (cualquiera de los dos participantes; borra la conversación y sus mensajes)
+// DELETE /api/chat/:id  cualquiera de los dos participantes borra la conversación y sus mensajes
 router.delete('/:id', requireLogin, async (req, res) => {
   try {
-    const yo = req.session.userId;
+    const yo = req.user.id;
     const conv = await conversacionDe(req.params.id, yo);
     if (!conv) return res.status(404).json({ error: 'Conversación no encontrada' });
 

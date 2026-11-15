@@ -13,7 +13,7 @@ function escaparRegex(texto) {
 // GET /api/amigos  mis amigos y mis solicitudes pendientes
 router.get('/', requireLogin, async (req, res) => {
   try {
-    const yo = req.session.userId;
+    const yo = req.user.id;
 
     const amistades = await Amistad.find({
       estado: { $in: ['pendiente', 'aceptada'] },
@@ -48,7 +48,7 @@ router.get('/', requireLogin, async (req, res) => {
 // GET /api/amigos/buscar usuarios y su relación conmigo
 router.get('/buscar', requireLogin, async (req, res) => {
   try {
-    const yo = req.session.userId;
+    const yo = req.user.id;
     const q = (req.query.q || '').trim();
 
     const filtro = { _id: { $ne: yo } };
@@ -101,7 +101,7 @@ router.get('/buscar', requireLogin, async (req, res) => {
 // GET /api/amigos/:id  una amistad o solicitud (solo la pueden ver quienes participan en ella)
 router.get('/:id', requireLogin, async (req, res) => {
   try {
-    const yo = req.session.userId;
+    const yo = req.user.id;
     if (!mongoose.isValidObjectId(req.params.id)) {
       return res.status(400).json({ error: 'Id inválido' });
     }
@@ -135,7 +135,7 @@ router.get('/:id', requireLogin, async (req, res) => {
 // POST /api/amigos   enviar solicitud
 router.post('/', requireLogin, async (req, res) => {
   try {
-    const yo = req.session.userId;
+    const yo = req.user.id;
     const { destinatario } = req.body;
 
     if (!mongoose.isValidObjectId(destinatario)) {
@@ -175,7 +175,7 @@ router.post('/', requireLogin, async (req, res) => {
 // PUT /api/amigos/:id  responder una solicitud
 router.put('/:id', requireLogin, async (req, res) => {
   try {
-    const yo = req.session.userId;
+    const yo = req.user.id;
     const { estado } = req.body;
 
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -214,12 +214,11 @@ router.put('/:id', requireLogin, async (req, res) => {
 });
 
 // DELETE /api/amigos/:id
-//  - amistad aceptada: la puede eliminar cualquiera de los dos
-//  - solicitud pendiente: solo quien la envió puede cancelarla
-//    (quien la recibió la rechaza con PUT y estado "rechazada")
+// amistad aceptada: la puede eliminar cualquiera de los dos
+// solicitud pendiente: solo quien la envió puede cancelarla
 router.delete('/:id', requireLogin, async (req, res) => {
   try {
-    const yo = req.session.userId;
+    const yo = req.user.id;
     if (!mongoose.isValidObjectId(req.params.id)) {
       return res.status(400).json({ error: 'Id inválido' });
     }

@@ -22,7 +22,7 @@ function formatear(c, yo) {
   };
 }
 
-// GET /api/comentarios?resena=ID  (los comentarios de una reseña)
+// GET /api/comentarios?resena=ID  los comentarios de una reseña
 router.get('/', async (req, res) => {
   try {
     const { resena } = req.query;
@@ -34,14 +34,14 @@ router.get('/', async (req, res) => {
       .populate('usuario', 'username avatar')
       .sort({ createdAt: 1 }); // los más viejos primero
 
-    res.json(comentarios.map(c => formatear(c, req.session.userId)));
+    res.json(comentarios.map(c => formatear(c, req.user.id)));
   } catch (err) {
     logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
 
-// GET /api/comentarios/:id  (uno solo)
+// GET /api/comentarios/:id  uno solo
 router.get('/:id', async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -51,7 +51,7 @@ router.get('/:id', async (req, res) => {
     const c = await Comentario.findById(req.params.id).populate('usuario', 'username avatar');
     if (!c) return res.status(404).json({ error: 'Comentario no encontrado' });
 
-    res.json({ ...formatear(c, req.session.userId), resena: c.resena });
+    res.json({ ...formatear(c, req.user.id), resena: c.resena });
   } catch (err) {
     logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
@@ -90,7 +90,7 @@ router.post('/', requireLogin, async (req, res) => {
   }
 });
 
-// PUT /api/comentarios/:id  (solo su autor o un admin)
+// PUT /api/comentarios/:id  solo su autor o un admin
 router.put('/:id', requireLogin, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -122,7 +122,7 @@ router.put('/:id', requireLogin, async (req, res) => {
   }
 });
 
-// DELETE /api/comentarios/:id  (solo su autor o un admin)
+// DELETE /api/comentarios/:id  solo su autor o un admin
 router.delete('/:id', requireLogin, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -147,7 +147,7 @@ router.delete('/:id', requireLogin, async (req, res) => {
   }
 });
 
-// POST /api/comentarios/:id/like  -> da o quita like
+// POST /api/comentarios/:id/like  da o quita like
 router.post('/:id/like', requireLogin, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -156,7 +156,7 @@ router.post('/:id/like', requireLogin, async (req, res) => {
     const comentario = await Comentario.findById(req.params.id);
     if (!comentario) return res.status(404).json({ error: 'Comentario no encontrado' });
 
-    const yo = req.session.userId;
+    const yo = req.user.id;
     const yaLeDio = comentario.likes.some(u => u.toString() === yo);
 
     if (yaLeDio) comentario.likes.pull(yo);

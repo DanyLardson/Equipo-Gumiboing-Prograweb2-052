@@ -2,7 +2,7 @@ const express = require('express');
 const logger = require('../utils/logger');
 const bcrypt = require('bcrypt');
 const { Usuario } = require('../models');
-const { requireLogin } = require('../middleware/auth');
+const { requireLogin, generarToken, sesionPermitida } = require('../middleware/auth');
 const { validarRegistro } = require('../utils/validaciones');
 
 const router = express.Router();
@@ -30,7 +30,7 @@ router.post('/registro', async (req, res) => {
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
-    // Se exige que sean texto (si llegara un objeto, se rechaza en vez de romper la consulta)
+    // Se exige que sean texto 
     const email = typeof req.body.email === 'string' ? req.body.email.toLowerCase().trim() : '';
     const password = typeof req.body.password === 'string' ? req.body.password : '';
 
@@ -46,11 +46,29 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Correo o contraseña incorrectos' });
     }
 
-    req.session.userId = usuario._id.toString();
-    req.session.rol = usuario.rol;
+    if (sesionPermitida() && req.session) {
+      req.session.userId = usuario._id.toString();
+      req.session.rol = usuario.rol;
+    }
+
+    // token que el cliente debe mandar en cada petición
+    const token = generarToken(usuario);
     logger.info('Login exitoso', { userId: usuario._id.toString(), rol: usuario.rol });
 
-    res.json({ mensaje: 'Bienvenido', username: usuario.username, rol: usuario.rol });
+    res.json({
+      mensaje: 'Bienvenido',
+      token,
+      tokenType: 'Bearer',
+      expiresIn: process.env.JWT_EXPIRES_IN || '2h',
+      usuario: {
+        _id: usuario._id,
+        username: usuario.username,
+        rol: usuario.rol,
+        avatar: usuario.avatar
+      },
+      username: usuario.username,
+      rol: usuario.rol
+    });
   } catch (err) {
     logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });
@@ -58,19 +76,29 @@ router.post('/login', async (req, res) => {
 });
 
 // POST /api/auth/logout
+// el token no se "cierra" en el servidor, el cliente lo descarta (y expira solo).
 router.post('/logout', (req, res) => {
-  logger.info('Logout', { userId: req.session.userId });
-  req.session.destroy(() => {
-    res.clearCookie('connect.sid');
+  logger.info('Logout', { userId: req.user ? req.user.id : undefined });
+  if (req.session) {
+    req.session.destroy(() => {
+      res.clearCookie('connect.sid');
+      res.json({ mensaje: 'Sesión cerrada' });
+    });
+  } else {
     res.json({ mensaje: 'Sesión cerrada' });
-  });
+  }
 });
 
 // GET /api/auth/me
 router.get('/me', requireLogin, async (req, res) => {
-  const usuario = await Usuario.findById(req.session.userId).select('-password');
-  if (!usuario) return res.status(401).json({ error: 'Usuario no encontrado' });
-  res.json(usuario);
+  try {
+    const usuario = await Usuario.findById(req.user.id).select('-password');
+    if (!usuario) return res.status(401).json({ error: 'Usuario no encontrado' });
+    res.json(usuario);
+  } catch (err) {
+    logger.error(`${req.method} ${req.originalUrl}`, err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
 });
 
 module.exports = router;
