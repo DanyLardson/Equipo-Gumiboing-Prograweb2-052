@@ -98,6 +98,40 @@ router.get('/buscar', requireLogin, async (req, res) => {
   }
 });
 
+// GET /api/amigos/:id  una amistad o solicitud (solo la pueden ver quienes participan en ella)
+router.get('/:id', requireLogin, async (req, res) => {
+  try {
+    const yo = req.session.userId;
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Id inválido' });
+    }
+
+    const amistad = await Amistad.findOne({
+      _id: req.params.id,
+      $or: [{ solicitante: yo }, { destinatario: yo }]
+    })
+      .populate('solicitante', 'username avatar')
+      .populate('destinatario', 'username avatar');
+    if (!amistad) return res.status(404).json({ error: 'Amistad no encontrada' });
+
+    const fueYo = !!amistad.solicitante && amistad.solicitante._id.toString() === yo;
+    let relacion = 'amigos';
+    if (amistad.estado === 'pendiente') relacion = fueYo ? 'enviada' : 'recibida';
+
+    res.json({
+      _id: amistad._id,
+      estado: amistad.estado,
+      relacion,
+      usuario: fueYo ? amistad.destinatario : amistad.solicitante,
+      createdAt: amistad.createdAt,
+      updatedAt: amistad.updatedAt
+    });
+  } catch (err) {
+    logger.error(`${req.method} ${req.originalUrl}`, err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
 // POST /api/amigos   enviar solicitud
 router.post('/', requireLogin, async (req, res) => {
   try {
@@ -127,6 +161,7 @@ router.post('/', requireLogin, async (req, res) => {
     }
 
     const nueva = await Amistad.create({ solicitante: yo, destinatario });
+    logger.info('Solicitud de amistad enviada', { amistadId: nueva._id.toString(), de: yo, para: destinatario });
     res.status(201).json(nueva);
   } catch (err) {
     if (err.code === 11000) {
@@ -164,12 +199,48 @@ router.put('/:id', requireLogin, async (req, res) => {
     if (estado === 'aceptada') {
       amistad.estado = 'aceptada';
       await amistad.save();
+      logger.info('Solicitud de amistad aceptada', { amistadId: req.params.id, por: yo });
       return res.json(amistad);
     }
 
     // Rechazada
     await amistad.deleteOne();
+    logger.info('Solicitud de amistad rechazada', { amistadId: req.params.id, por: yo });
     res.json({ mensaje: 'Solicitud rechazada' });
+  } catch (err) {
+    logger.error(`${req.method} ${req.originalUrl}`, err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// DELETE /api/amigos/:id
+//  - amistad aceptada: la puede eliminar cualquiera de los dos
+//  - solicitud pendiente: solo quien la envió puede cancelarla
+//    (quien la recibió la rechaza con PUT y estado "rechazada")
+router.delete('/:id', requireLogin, async (req, res) => {
+  try {
+    const yo = req.session.userId;
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Id inválido' });
+    }
+
+    const amistad = await Amistad.findOne({
+      _id: req.params.id,
+      $or: [{ solicitante: yo }, { destinatario: yo }]
+    });
+    if (!amistad) return res.status(404).json({ error: 'Amistad no encontrada' });
+
+    if (amistad.estado === 'pendiente' && amistad.solicitante.toString() !== yo) {
+      return res.status(403).json({ error: 'Para rechazar la solicitud usa la opción de responderla' });
+    }
+
+    const eraAmistad = amistad.estado === 'aceptada';
+    await amistad.deleteOne();
+
+    logger.info(eraAmistad ? 'Amistad eliminada' : 'Solicitud de amistad cancelada', {
+      amistadId: req.params.id, por: yo
+    });
+    res.json({ mensaje: eraAmistad ? 'Amistad eliminada' : 'Solicitud cancelada' });
   } catch (err) {
     logger.error(`${req.method} ${req.originalUrl}`, err);
     res.status(500).json({ error: 'Error del servidor' });

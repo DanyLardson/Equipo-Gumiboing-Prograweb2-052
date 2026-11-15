@@ -3,24 +3,19 @@ const logger = require('../utils/logger');
 const bcrypt = require('bcrypt');
 const { Usuario } = require('../models');
 const { requireLogin } = require('../middleware/auth');
+const { validarRegistro } = require('../utils/validaciones');
 
 const router = express.Router();
 
 // POST /api/auth/registro
 router.post('/registro', async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { error, datos } = validarRegistro(req.body);
+    if (error) return res.status(400).json({ error });
 
-    if (!username || !email || !password) {
-      return res.status(400).json({ error: 'Faltan datos' });
-    }
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
-    }
-
-    const hash = await bcrypt.hash(password, 10);
-    await Usuario.create({ username, email, password: hash });
-    logger.info('Usuario registrado', { username, email });
+    const hash = await bcrypt.hash(datos.password, 10);
+    await Usuario.create({ username: datos.username, email: datos.email, password: hash });
+    logger.info('Usuario registrado', { username: datos.username, email: datos.email });
 
     res.status(201).json({ mensaje: 'Cuenta creada' });
   } catch (err) {
@@ -35,13 +30,15 @@ router.post('/registro', async (req, res) => {
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    // Se exige que sean texto (si llegara un objeto, se rechaza en vez de romper la consulta)
+    const email = typeof req.body.email === 'string' ? req.body.email.toLowerCase().trim() : '';
+    const password = typeof req.body.password === 'string' ? req.body.password : '';
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Faltan datos' });
     }
 
-    const usuario = await Usuario.findOne({ email: email.toLowerCase().trim() });
+    const usuario = await Usuario.findOne({ email });
     const ok = usuario && await bcrypt.compare(password, usuario.password);
 
     if (!ok) {

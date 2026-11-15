@@ -11,23 +11,22 @@ process.on('unhandledRejection', (reason) => {
   logger.error('unhandledRejection', reason instanceof Error ? reason : { reason: String(reason) });
 });
 
-// Si falta alguna variable del .env, avisamos claro y salimos (en vez de fallar raro después)
+// avisar si falta alguna variable en env
 const variablesRequeridas = ['MONGO_URI', 'SESSION_SECRET'];
 const faltantes = variablesRequeridas.filter(v => !process.env[v]);
 if (faltantes.length) {
   logger.error(`Faltan variables en el archivo .env: ${faltantes.join(', ')}`);
-  console.error('   Copia .env.example como .env y llena los valores.');
   process.exit(1);
 }
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const path = require('path'); //libreria de Node.js para ayudar con las rutas de carpetas
+const path = require('path'); 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Carga los modelos (así Mongoose crea las colecciones)
+// Carga los modelos
 require('./cinescore/models');
 const { protegerPaginas, protegerApi } = require('./cinescore/middleware/auth');
 
@@ -35,14 +34,14 @@ const { protegerPaginas, protegerApi } = require('./cinescore/middleware/auth');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//sesiones (deben ir antes de las rutas)
+//sesiones 
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false
 }));
 
-// Sin sesión, las páginas mandan al login (debe ir antes de los express.static)
+// Sin sesión, las páginas mandan al login 
 app.use(protegerPaginas);
 
 //Para hacer las carpetas publicas
