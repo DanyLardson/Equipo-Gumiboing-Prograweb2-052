@@ -1,14 +1,8 @@
-// Borrado en cascada: al borrar algo también se borra lo que depende de eso.
-//
-// Los reportes que apuntaban al contenido borrado se tratan así:
-//   - Por defecto se BORRAN (para que no queden huérfanos).
-//   - Con { conservarReportes: true } se CONSERVAN como historial y quedan
-//     con estado "eliminado" (lo usa la moderación del admin).
-//
-// Nota: MongoDB local sin réplica no soporta transacciones, así que el borrado
-// va por pasos (de lo más "hijo" a lo más "padre"). Si algo falla a la mitad,
-// queda registrado en el log y se puede volver a intentar.
+// borrado en cascada: al borrar algo también se borra lo que depende de eso.
 
+// los reportes que apuntaban al contenido borrado:
+// por defecto se borran (para que no queden huérfanos pipipi).
+// con { conservarReportes: true } se conservan como historial y quedan con estado "eliminado" (lo usa la moderación del admin).
 const {
   Usuario, Pelicula, Resena, Comentario, Foro, MensajeForo, Reporte,
   Amistad, Conversacion, MensajeChat
@@ -63,20 +57,18 @@ async function borrarForos(filtro, opts = {}) {
   return r.deletedCount;
 }
 
-async function borrarPelicula(peliculaId) {
-  const resenas = await borrarResenas({ pelicula: peliculaId });
-  const foros = await borrarForos({ pelicula: peliculaId });
+async function borrarPelicula(peliculaId, opts = {}) {
+  const resenas = await borrarResenas({ pelicula: peliculaId }, opts);
+  const foros = await borrarForos({ pelicula: peliculaId }, opts);
+  await tratarReportes('Pelicula', [peliculaId], opts);
   await Pelicula.deleteOne({ _id: peliculaId });
   logger.info('Borrado en cascada de película', {
     peliculaId: String(peliculaId), resenas, foros
   });
 }
 
-// Borra un usuario y TODO lo suyo: reseñas, comentarios, mensajes y foros, likes,
-// reportes que hizo, amistades y conversaciones.
-// Las películas que agregó se conservan (el catálogo no se pierde); quedan sin dueño
-// y solo un admin puede editarlas.
-// Devuelve las películas cuyo promedio hay que recalcular (lo hace la ruta).
+// borra un usuario y todo lo suyo: reseñas, comentarios, mensajes y foros, likes, reportes que hizo, amistades y conversaciones.
+// las películas que agregó se conservan (el catálogo no se pierde); quedan sin dueño y solo un admin puede editarlas.
 async function borrarUsuario(userId) {
   const peliculasAfectadas = await Resena.distinct('pelicula', { usuario: userId });
 
@@ -85,7 +77,7 @@ async function borrarUsuario(userId) {
   const mensajesForo = await borrarMensajesForo({ usuario: userId });
   const foros = await borrarForos({ creadoPor: userId });
 
-  // Sus likes en contenido de otras personas
+  // los likes en contenido de otras personas
   await Resena.updateMany({ likes: userId }, { $pull: { likes: userId } });
   await Comentario.updateMany({ likes: userId }, { $pull: { likes: userId } });
   await MensajeForo.updateMany({ likes: userId }, { $pull: { likes: userId } });

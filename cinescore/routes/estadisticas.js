@@ -1,11 +1,9 @@
 // Estadísticas para la sección "Reportes" del panel de admin.
-// Todas las rutas son solo para admin y devuelven JSON.
-//
-//   GET /api/estadisticas/resumen             -> indicadores generales (para tarjetas)
-//   GET /api/estadisticas/peliculas-top       -> consulta 1: películas mejor calificadas (películas + reseñas + comentarios + foros)
-//   GET /api/estadisticas/usuarios-activos    -> consulta 2: usuarios más activos (usuarios + reseñas + comentarios + mensajes de foro + foros)
-//   GET /api/estadisticas/contenido-reportado -> consulta 3: contenido más reportado (reportes + contenido + autor)
-//   GET /api/estadisticas/generos             -> consulta 4: actividad por género (películas + reseñas + foros + mensajes de foro)
+//   GET /api/estadisticas/resumen: indicadores generales (para tarjetas)
+//   GET /api/estadisticas/peliculas-top: películas mejor calificadas (películas + reseñas + comentarios + foros)
+//   GET /api/estadisticas/usuarios-activos: usuarios más activos (usuarios + reseñas + comentarios + mensajes de foro + foros)
+//   GET /api/estadisticas/contenido-reportado: contenido más reportado (reportes + contenido + autor)
+//   GET /api/estadisticas/genero: actividad por género (películas + reseñas + foros + mensajes de foro)
 
 const express = require('express');
 const logger = require('../utils/logger');
@@ -18,10 +16,10 @@ const { ESTADOS_REPORTE } = require('../utils/validaciones');
 
 const router = express.Router();
 
-// Nombre real de la colección en MongoDB (lo necesita $lookup)
+// nombre de la colección en mongo
 const col = (Modelo) => Modelo.collection.name;
 
-// Lee un número entero de la URL; devuelve null si viene mal
+// lee un número entero de la URL, devuelve null si viene mal
 function entero(valor, porDefecto, min, max) {
   if (valor === undefined || valor === '') return porDefecto;
   const n = Number(valor);
@@ -29,19 +27,17 @@ function entero(valor, porDefecto, min, max) {
   return n;
 }
 
-// Suma de likes de un arreglo de documentos (cada uno con su arreglo "likes")
+// suma de likes de un arreglo de documentos
 const sumaLikes = (campo) => ({
   $sum: {
     $map: { input: campo, as: 'x', in: { $size: { $ifNull: ['$$x.likes', []] } } }
   }
 });
 
-// ---------------------------------------------------------------------
-// Indicadores generales
-// ---------------------------------------------------------------------
+// indicadores generales
 router.get('/resumen', requireAdmin, async (req, res) => {
   try {
-    // Últimos 6 meses (incluye el actual)
+    // últimos 6 meses (incluye el actual)
     const desde = new Date();
     desde.setDate(1);
     desde.setHours(0, 0, 0, 0);
@@ -69,14 +65,14 @@ router.get('/resumen', requireAdmin, async (req, res) => {
       ])
     ]);
 
-    // Reportes por estado (con 0 si no hay)
+    // reportes por estado
     const reportesPorEstado = Object.fromEntries(ESTADOS_REPORTE.map(e => [e, 0]));
     for (const r of porEstado) reportesPorEstado[r._id] = r.total;
 
     const usuariosPorRol = { usuario: 0, admin: 0 };
     for (const r of porRol) usuariosPorRol[r._id] = r.total;
 
-    // Los 6 meses completos, con 0 en los que no tuvieron reseñas
+    // los 6 meses completos, con 0 en los que no tuvieron reseñas
     const mapaMeses = new Map(porMes.map(m => [m._id, m.total]));
     const resenasPorMes = [];
     for (let i = 0; i < 6; i++) {
@@ -100,10 +96,8 @@ router.get('/resumen', requireAdmin, async (req, res) => {
   }
 });
 
-// ---------------------------------------------------------------------
-// Consulta 1: películas mejor calificadas
-//   ?limite=10 (1 a 50)   ?minResenas=1 (mínimo de reseñas para entrar al ranking)
-// ---------------------------------------------------------------------
+
+// Consulta 1: películas mejor calificadas limite=10 (1 a 50)   minResenas=1 (mínimo de reseñas para entrar al ranking)
 router.get('/peliculas-top', requireAdmin, async (req, res) => {
   try {
     const limite = entero(req.query.limite, 10, 1, 50);
@@ -138,10 +132,7 @@ router.get('/peliculas-top', requireAdmin, async (req, res) => {
   }
 });
 
-// ---------------------------------------------------------------------
-// Consulta 2: usuarios más activos
-//   ?limite=10 (1 a 50)
-// ---------------------------------------------------------------------
+// Consulta 2: usuarios más activos limite=10 (1 a 50)
 router.get('/usuarios-activos', requireAdmin, async (req, res) => {
   try {
     const limite = entero(req.query.limite, 10, 1, 50);
@@ -160,7 +151,7 @@ router.get('/usuarios-activos', requireAdmin, async (req, res) => {
           totalMensajesForo: { $size: '$mensajesForo' },
           totalForos: { $size: '$foros' },
           likesRecibidos: sumaLikes('$resenas'),
-          // Indicador de actividad: todo lo que ha publicado
+          // indicador de actividad: todo lo que ha publicado
           actividad: { $add: [
             { $size: '$resenas' }, { $size: '$comentarios' },
             { $size: '$mensajesForo' }, { $size: '$foros' }
@@ -177,10 +168,7 @@ router.get('/usuarios-activos', requireAdmin, async (req, res) => {
   }
 });
 
-// ---------------------------------------------------------------------
-// Consulta 3: contenido más reportado (con su autor y estado de moderación)
-//   ?limite=10 (1 a 50)   ?estado=pendiente|revisado|eliminado (filtra los reportes)
-// ---------------------------------------------------------------------
+// consulta 3: contenido más reportado (con su autor y estado de moderación) limite=10 (1 a 50)   ?estado=pendiente|revisado|eliminado (filtra los reportes)
 router.get('/contenido-reportado', requireAdmin, async (req, res) => {
   try {
     const limite = entero(req.query.limite, 10, 1, 50);
@@ -206,12 +194,15 @@ router.get('/contenido-reportado', requireAdmin, async (req, res) => {
       } },
       { $sort: { pendientes: -1, totalReportes: -1, ultimoReporte: -1 } },
       { $limit: limite },
-      // El contenido puede estar en una de tres colecciones según su tipo
+      // el contenido puede estar en una de cuatro colecciones según su tipo
       { $lookup: { from: col(Resena), localField: '_id.contenido', foreignField: '_id', as: 'r' } },
       { $lookup: { from: col(Comentario), localField: '_id.contenido', foreignField: '_id', as: 'c' } },
       { $lookup: { from: col(MensajeForo), localField: '_id.contenido', foreignField: '_id', as: 'm' } },
-      { $addFields: { doc: { $arrayElemAt: [{ $concatArrays: ['$r', '$c', '$m'] }, 0] } } },
-      { $lookup: { from: col(Usuario), localField: 'doc.usuario', foreignField: '_id', as: 'autor' } },
+      { $lookup: { from: col(Pelicula), localField: '_id.contenido', foreignField: '_id', as: 'p' } },
+      { $addFields: { doc: { $arrayElemAt: [{ $concatArrays: ['$r', '$c', '$m', '$p'] }, 0] } } },
+      // el autor es "usuario" (reseña, comentario, mensaje) o "creadoPor" (película)
+      { $addFields: { autorId: { $ifNull: ['$doc.usuario', '$doc.creadoPor'] } } },
+      { $lookup: { from: col(Usuario), localField: 'autorId', foreignField: '_id', as: 'autor' } },
       { $project: {
           tipo: '$_id.tipo',
           contenidoId: '$_id.contenido',
@@ -221,7 +212,7 @@ router.get('/contenido-reportado', requireAdmin, async (req, res) => {
           ultimoReporte: 1,
           motivos: { $slice: ['$motivos', 5] },
           titulo: '$doc.titulo',
-          texto: '$doc.texto',
+          texto: { $ifNull: ['$doc.texto', '$doc.sinopsis'] },
           autor: { $arrayElemAt: ['$autor.username', 0] }
       } }
     ]);
@@ -231,7 +222,7 @@ router.get('/contenido-reportado', requireAdmin, async (req, res) => {
       contenidoId: f.contenidoId,
       totalReportes: f.totalReportes,
       pendientes: f.pendientes,
-      // Resumen del estado de moderación de ese contenido
+      // resumen del estado de moderación de ese contenido
       estado: f.pendientes > 0 ? 'pendiente' : (f.eliminados > 0 ? 'eliminado' : 'revisado'),
       ultimoReporte: f.ultimoReporte,
       motivos: f.motivos,
@@ -245,9 +236,7 @@ router.get('/contenido-reportado', requireAdmin, async (req, res) => {
   }
 });
 
-// ---------------------------------------------------------------------
 // Consulta 4: actividad por género
-// ---------------------------------------------------------------------
 router.get('/generos', requireAdmin, async (req, res) => {
   try {
     const generos = await Pelicula.aggregate([

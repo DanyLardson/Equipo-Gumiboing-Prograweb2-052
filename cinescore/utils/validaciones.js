@@ -1,7 +1,5 @@
-// Validaciones del back end (independientes de las del front).
-// Cada función devuelve { error, datos }: si "error" trae texto, no se debe guardar.
-
-// Debe coincidir con el enum de models/Pelicula.js
+// validaciones del back end 
+// cada función devuelve { error, datos }: si "error" trae texto, no se debe guardar.
 const GENEROS = ['Drama', 'Ciencia ficción', 'Comedia', 'Suspenso', 'Terror', 'Acción', 'Animación'];
 
 function texto(valor) {
@@ -79,8 +77,7 @@ function validarMensajeForo(body = {}) {
   return { datos: { texto: cuerpo } };
 }
 
-// ---------- Usuarios ----------
-// 3 a 30 caracteres: letras (con acentos), números, punto, guion y guion bajo
+// usuarios
 const RE_USERNAME = /^[A-Za-z0-9ÁÉÍÓÚÜÑáéíóúüñ._-]{3,30}$/;
 const RE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -94,7 +91,7 @@ function errorEmail(valor) {
   return RE_EMAIL.test(valor) && valor.length <= 100 ? null : 'El correo no es válido';
 }
 
-// bcrypt solo usa los primeros 72 caracteres, por eso ese es el máximo
+// bcrypt
 function errorPassword(valor) {
   if (typeof valor !== 'string' || valor.length < 6) {
     return 'La contraseña debe tener al menos 6 caracteres';
@@ -115,8 +112,7 @@ function validarRegistro(body = {}) {
   return { datos: { username, email, password } };
 }
 
-// Edición parcial: solo se valida y se actualiza lo que venga en el body.
-// El rol solo lo puede cambiar un admin (opciones.admin = true).
+// El rol solo lo puede cambiar un admin
 function validarPerfil(body = {}, opciones = {}) {
   const datos = {};
 
@@ -168,7 +164,7 @@ function validarCambioPassword(body = {}) {
   return { datos: { passwordActual, passwordNueva } };
 }
 
-// ---------- Chat ----------
+// chat
 function validarMensajeChat(body = {}) {
   const cuerpo = texto(body.texto);
 
@@ -178,8 +174,7 @@ function validarMensajeChat(body = {}) {
   return { datos: { texto: cuerpo } };
 }
 
-// Deben coincidir con los enum de models/Reporte.js
-const TIPOS_REPORTE = ['Resena', 'Comentario', 'MensajeForo'];
+const TIPOS_REPORTE = ['Pelicula', 'Resena', 'Comentario', 'MensajeForo'];
 const ESTADOS_REPORTE = ['pendiente', 'revisado', 'eliminado'];
 
 function validarReporte(body = {}) {
@@ -195,7 +190,7 @@ function validarReporte(body = {}) {
   return { datos: { tipo, contenido, razon } };
 }
 
-// El admin solo puede alternar entre pendiente y revisado.
+// el admin solo puede alternar entre pendiente y revisado.
 // "eliminado" se asigna únicamente al borrar el contenido reportado.
 function validarEstadoReporte(body = {}) {
   const estado = texto(body.estado);
