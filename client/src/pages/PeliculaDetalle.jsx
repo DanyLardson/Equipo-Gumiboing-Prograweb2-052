@@ -14,6 +14,7 @@ import Poster from '../components/Poster';
 import Confirmar from '../components/Confirmar';
 import DialogoReportar from '../components/DialogoReportar';
 import DialogoResena from '../components/DialogoResena';
+import ForosDePelicula from '../components/ForosDePelicula';
 import TarjetaResena from '../components/TarjetaResena';
 
 export default function PeliculaDetalle() {
@@ -24,10 +25,10 @@ export default function PeliculaDetalle() {
   const pelicula = useApi(`/api/peliculas/${id}`);
   const resenas = useApi(`/api/resenas?pelicula=${id}`);
 
-  const [dialogo, setDialogo] = useState(null); // resena, eliminar, reportar, null
+  const [dialogo, setDialogo] = useState(null); // 'resena' | 'eliminar' | 'reportar' | null
   const [aviso, setAviso] = useState('');
 
-  // cuando cambia una reseña o un comentario cambia también el promedio de la película
+  // Cuando cambia una reseña o un comentario cambia también el promedio de la película
   function alCambiar() {
     resenas.recargar();
     pelicula.recargar();
@@ -64,7 +65,7 @@ export default function PeliculaDetalle() {
         Volver a explorar
       </Button>
 
-      {/* datos de la película */}
+      {/* Datos de la película */}
       <Card sx={{ mb: 4 }}>
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '260px 1fr' } }}>
           <Poster src={p.poster} alt={p.titulo} alto={380} />
@@ -130,6 +131,11 @@ export default function PeliculaDetalle() {
         {lista.map((r) => (
           <TarjetaResena key={r._id} resena={r} peliculaId={id} onCambio={alCambiar} />
         ))}
+      </Box>
+
+      {/* foros de la película */}
+      <Box sx={{ mt: 5 }}>
+        <ForosDePelicula peliculaId={id} />
       </Box>
 
       {dialogo === 'resena' && (

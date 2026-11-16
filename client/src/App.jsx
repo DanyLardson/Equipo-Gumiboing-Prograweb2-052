@@ -7,19 +7,22 @@ import Explorar from './pages/Explorar';
 import Perfil from './pages/Perfil';
 import PeliculaDetalle from './pages/PeliculaDetalle';
 import PeliculaForm from './pages/PeliculaForm';
+import Foros from './pages/Foros';
+import ForoDetalle from './pages/ForoDetalle';
+import ForoForm from './pages/ForoForm';
 import Admin from './pages/Admin';
 import NoEncontrada from './pages/NoEncontrada';
 
 export default function App() {
   return (
     <Routes>
-      {/* sin sesión: solo login y registro */}
+      {/* Sin sesión: solo login y registro */}
       <Route element={<RutaPublica />}>
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
       </Route>
 
-      {/* con sesión: todo lo demás, dentro del menú */}
+      {/* Con sesión: todo lo demás, dentro del menú */}
       <Route element={<RutaPrivada />}>
         <Route element={<Layout />}>
           <Route path="/" element={<Explorar />} />
@@ -27,8 +30,12 @@ export default function App() {
           <Route path="/peliculas/nueva" element={<PeliculaForm />} />
           <Route path="/peliculas/:id" element={<PeliculaDetalle />} />
           <Route path="/peliculas/:id/editar" element={<PeliculaForm />} />
+          <Route path="/foros" element={<Foros />} />
+          <Route path="/foros/nuevo" element={<ForoForm />} />
+          <Route path="/foros/:id" element={<ForoDetalle />} />
+          <Route path="/foros/:id/editar" element={<ForoForm />} />
 
-          {/* solo admin */}
+          {/* Solo admin */}
           <Route element={<RutaAdmin />}>
             <Route path="/admin" element={<Admin />} />
           </Route>

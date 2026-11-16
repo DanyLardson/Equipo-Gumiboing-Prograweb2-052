@@ -4,9 +4,10 @@ import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { colores } from '../theme';
 
-// menú según el rol (el admin solo ve el panel y su perfil)
+// menú según el rol de admin y usuario
 const ENLACES_USUARIO = [
   { a: '/', texto: 'Explorar' },
+  { a: '/foros', texto: 'Foros' },
   { a: '/perfil', texto: 'Perfil' }
 ];
 const ENLACES_ADMIN = [
@@ -19,8 +20,11 @@ export default function Layout() {
   const { pathname } = useLocation();
   const enlaces = esAdmin ? ENLACES_ADMIN : ENLACES_USUARIO;
 
-  // "Explorar" también queda marcado dentro del detalle y los formularios de película
-  const activo = (a) => pathname === a || (a === '/' && pathname.startsWith('/peliculas'));
+  // el enlace queda marcado también dentro de sus pantallas hijas (detalle, formularios)
+  const activo = (a) =>
+    pathname === a ||
+    (a === '/' && pathname.startsWith('/peliculas')) ||
+    (a !== '/' && pathname.startsWith(`${a}/`));
 
   return (
     <>
