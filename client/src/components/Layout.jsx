@@ -1,13 +1,18 @@
-import { AppBar, Box, Button, Chip, Container, Toolbar, Typography } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
+import { AppBar, Badge, Box, Button, Chip, Container, Toolbar, Typography } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { usePolling } from '../hooks/usePolling';
+import { api } from '../services/api';
 import { colores } from '../theme';
 
-// menú según el rol de admin y usuario
+// Menú según el rol: el admin solo ve el panel y su perfil
 const ENLACES_USUARIO = [
   { a: '/', texto: 'Explorar' },
   { a: '/foros', texto: 'Foros' },
+  { a: '/amigos', texto: 'Amigos' },
+  { a: '/chat', texto: 'Chat' },
   { a: '/perfil', texto: 'Perfil' }
 ];
 const ENLACES_ADMIN = [
@@ -15,8 +20,30 @@ const ENLACES_ADMIN = [
   { a: '/perfil', texto: 'Perfil' }
 ];
 
+// total de mensajes sin leer, para el aviso en "Chat"
+function useNoLeidos(activo) {
+  const [total, setTotal] = useState(0);
+
+  const cargar = useCallback(() => {
+    api.get('/api/chat/no-leidos')
+      .then((porAmigo) => setTotal(Object.values(porAmigo).reduce((suma, n) => suma + n, 0)))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (activo) cargar();
+  }, [activo, cargar]);
+
+  usePolling(() => {
+    if (activo) cargar();
+  }, 8000);
+
+  return total;
+}
+
 export default function Layout() {
   const { esAdmin, logout } = useAuth();
+  const noLeidos = useNoLeidos(!esAdmin);
   const { pathname } = useLocation();
   const enlaces = esAdmin ? ENLACES_ADMIN : ENLACES_USUARIO;
 
@@ -29,7 +56,7 @@ export default function Layout() {
   return (
     <>
       <AppBar position="static" elevation={0} sx={{ bgcolor: colores.noche }}>
-        <Toolbar sx={{ gap: 1 }}>
+        <Toolbar sx={{ gap: 1, flexWrap: 'wrap' }}>
           <Typography
             variant="h6"
             component={RouterLink}
@@ -59,7 +86,13 @@ export default function Layout() {
                 border: activo(enlace.a) ? `1px solid ${colores.dorado}` : '1px solid transparent'
               }}
             >
-              {enlace.texto}
+              {enlace.a === '/chat' ? (
+                <Badge badgeContent={noLeidos} color="primary" sx={{ '& .MuiBadge-badge': { right: -12 } }}>
+                  {enlace.texto}
+                </Badge>
+              ) : (
+                enlace.texto
+              )}
             </Button>
           ))}
           <Button

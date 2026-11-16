@@ -10,6 +10,8 @@ import PeliculaForm from './pages/PeliculaForm';
 import Foros from './pages/Foros';
 import ForoDetalle from './pages/ForoDetalle';
 import ForoForm from './pages/ForoForm';
+import Amigos from './pages/Amigos';
+import Chat from './pages/Chat';
 import Admin from './pages/Admin';
 import NoEncontrada from './pages/NoEncontrada';
 
@@ -34,6 +36,9 @@ export default function App() {
           <Route path="/foros/nuevo" element={<ForoForm />} />
           <Route path="/foros/:id" element={<ForoDetalle />} />
           <Route path="/foros/:id/editar" element={<ForoForm />} />
+          <Route path="/amigos" element={<Amigos />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/chat/:id" element={<Chat />} />
 
           {/* Solo admin */}
           <Route element={<RutaAdmin />}>
