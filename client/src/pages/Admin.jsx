@@ -1,36 +1,18 @@
-import { Alert, Box, Paper, Typography } from '@mui/material';
+import { useState } from 'react';
+import { Tab, Tabs, Typography } from '@mui/material';
 import { useApi } from '../hooks/useApi';
-import Cargando from '../components/Cargando';
-import { colores } from '../theme';
+import AdminEstadisticas from '../components/admin/AdminEstadisticas';
+import AdminReportes from '../components/admin/AdminReportes';
+import AdminResumen from '../components/admin/AdminResumen';
+import AdminUsuarios from '../components/admin/AdminUsuarios';
 
-function Indicador({ etiqueta, valor, alerta = false }) {
-  return (
-    <Paper
-      sx={{
-        p: 2.5,
-        bgcolor: alerta ? '#2a1a1a' : '#1d1d2b',
-        color: '#fff',
-        border: alerta ? `1px solid ${colores.rojo}55` : 'none'
-      }}
-    >
-      <Typography variant="caption" sx={{ color: alerta ? '#ff8b88' : 'rgba(255,255,255,0.6)' }}>
-        {etiqueta}
-      </Typography>
-      <Typography variant="h4" sx={{ color: alerta ? '#ff8b88' : '#fff' }}>
-        {valor}
-      </Typography>
-    </Paper>
-  );
-}
-
-// Las tablas de reportes y las 4 consultas
+// panel del admin: resumen, moderación de reportes, estadísticas y usuarios
 export default function Admin() {
-  const { datos, error, cargando } = useApi('/api/estadisticas/resumen');
+  const [pestana, setPestana] = useState(0);
 
-  if (cargando) return <Cargando />;
-  if (error) return <Alert severity="error">{error}</Alert>;
-
-  const { totales, reportesPorEstado } = datos;
+  // el resumen se comparte para mostrar los pendientes en la pestaña de reportes
+  const resumen = useApi('/api/estadisticas/resumen');
+  const pendientes = resumen.datos ? resumen.datos.reportesPorEstado.pendiente : 0;
 
   return (
     <>
@@ -38,22 +20,23 @@ export default function Admin() {
         Panel de administración
       </Typography>
 
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: 2
-        }}
+      <Tabs
+        value={pestana}
+        onChange={(e, valor) => setPestana(valor)}
+        variant="scrollable"
+        scrollButtons="auto"
+        sx={{ mb: 3, borderBottom: '1px solid #e6e2d8' }}
       >
-        <Indicador etiqueta="Reseñas" valor={totales.resenas} />
-        <Indicador etiqueta="Foros" valor={totales.foros} />
-        <Indicador etiqueta="Usuarios" valor={totales.usuarios} />
-        <Indicador etiqueta="Reportes pendientes" valor={reportesPorEstado.pendiente} alerta />
-      </Box>
+        <Tab label="Resumen" />
+        <Tab label={`Reportes${pendientes ? ` (${pendientes})` : ''}`} />
+        <Tab label="Estadísticas" />
+        <Tab label="Usuarios" />
+      </Tabs>
 
-      <Alert severity="info" sx={{ mt: 4 }}>
-        Aquí irán la moderación de reportes y las consultas de estadísticas (Fase 5).
-      </Alert>
+      {pestana === 0 && <AdminResumen resumen={resumen} onIrAReportes={() => setPestana(1)} />}
+      {pestana === 1 && <AdminReportes onCambio={resumen.recargar} />}
+      {pestana === 2 && <AdminEstadisticas />}
+      {pestana === 3 && <AdminUsuarios onCambio={resumen.recargar} />}
     </>
   );
 }

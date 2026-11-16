@@ -16,6 +16,7 @@ import { errorAvatar, errorBio, errorEmail, errorPassword, errorUsername } from 
 import Cargando from '../components/Cargando';
 import Poster from '../components/Poster';
 import { colores } from '../theme';
+import { Link } from 'react-router-dom'; 
 
 
 // Diálogos
@@ -318,6 +319,53 @@ export default function Perfil() {
   const { usuario, stats, recientes } = datos;
   const esAdmin = usuario.rol === 'admin';
   const miembroDesde = fechaCorta(usuario.createdAt, { year: 'numeric', month: 'long' });
+
+  // vista del admin
+  if (esAdmin) {
+    return (
+      <Card sx={{ overflow: 'hidden' }}>
+        <Box
+          sx={{
+            height: 120,
+            background: `linear-gradient(120deg, ${colores.noche} 0%, #2a2440 60%, ${colores.dorado}55 100%)`
+          }}
+        />
+        <CardContent sx={{ pt: 0, pb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 3, flexWrap: 'wrap' }}>
+            <Avatar
+              src={usuario.avatar || undefined}
+              sx={{
+                width: 120,
+                height: 120,
+                fontSize: 48,
+                mt: -7,
+                border: '4px solid #fff',
+                bgcolor: colores.dorado,
+                color: colores.noche
+              }}
+            >
+              {usuario.username[0].toUpperCase()}
+            </Avatar>
+
+            <Box sx={{ flexGrow: 1, mt: 1.5 }}>
+              <Typography variant="h4" sx={{ lineHeight: 1.1 }}>
+                {usuario.username}
+              </Typography>
+              <Typography color="text.secondary">{usuario.email}</Typography>
+              <Box sx={{ display: 'flex', gap: 1, mt: 1, flexWrap: 'wrap' }}>
+                <Chip label="Administrador" size="small" color="secondary" />
+                {miembroDesde && <Chip label={`Miembro desde ${miembroDesde}`} size="small" variant="outlined" />}
+              </Box>
+            </Box>
+
+            <Button component={Link} to="/admin" variant="contained" sx={{ mt: 1.5 }}>
+              Ir al panel de reportes
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+    );
+  }
 
   function alGuardarPerfil(actualizado) {
     actualizarUsuario(actualizado);
