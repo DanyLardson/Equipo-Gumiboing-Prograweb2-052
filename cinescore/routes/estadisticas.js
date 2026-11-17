@@ -48,7 +48,7 @@ router.get('/resumen', requireAdmin, async (req, res) => {
       amistades, conversaciones, mensajesChat, reportes,
       porRol, porEstado, promedio, sinResenas, porMes
     ] = await Promise.all([
-      Usuario.countDocuments(), Pelicula.countDocuments(), Resena.countDocuments(),
+      Usuario.countDocuments({ rol: { $ne: 'admin' } }), Pelicula.countDocuments(), Resena.countDocuments(),
       Comentario.countDocuments(), Foro.countDocuments(), MensajeForo.countDocuments(),
       Amistad.countDocuments(), Conversacion.countDocuments(), MensajeChat.countDocuments(),
       Reporte.countDocuments(),
@@ -139,6 +139,7 @@ router.get('/usuarios-activos', requireAdmin, async (req, res) => {
     if (limite === null) return res.status(400).json({ error: 'Parámetros inválidos' });
 
     const usuarios = await Usuario.aggregate([
+       { $match: { rol: { $ne: 'admin' } } },
       { $lookup: { from: col(Resena), localField: '_id', foreignField: 'usuario', as: 'resenas' } },
       { $lookup: { from: col(Comentario), localField: '_id', foreignField: 'usuario', as: 'comentarios' } },
       { $lookup: { from: col(MensajeForo), localField: '_id', foreignField: 'usuario', as: 'mensajesForo' } },
