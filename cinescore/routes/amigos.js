@@ -51,7 +51,7 @@ router.get('/buscar', requireLogin, async (req, res) => {
     const yo = req.user.id;
     const q = (req.query.q || '').trim();
 
-    const filtro = { _id: { $ne: yo } };
+    const filtro = { _id: { $ne: yo }, rol: { $ne: 'admin' } };
     if (q) filtro.username = { $regex: escaparRegex(q), $options: 'i' };
 
     const usuarios = await Usuario.find(filtro).select('username avatar').limit(20);
@@ -137,6 +137,11 @@ router.post('/', requireLogin, async (req, res) => {
   try {
     const yo = req.user.id;
     const { destinatario } = req.body;
+
+    const destino = await Usuario.findById(req.body.destinatario);
+    if (!destino || destino.rol === 'admin') {
+      return res.status(400).json({ error: 'Usuario no válido' });
+    }
 
     if (!mongoose.isValidObjectId(destinatario)) {
       return res.status(400).json({ error: 'Usuario inválido' });
