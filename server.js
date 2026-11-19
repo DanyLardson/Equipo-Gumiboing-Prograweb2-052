@@ -28,6 +28,7 @@ const session = require('express-session');
 const path = require('path'); //libreria de Node.js para ayudar con las rutas de carpetas
 
 const app = express();
+app.set('trust proxy', 1); //para render
 const PORT = process.env.PORT || 3000;
 
 // Carga los modelos
