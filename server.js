@@ -1,10 +1,10 @@
-
 const dns = require('dns');
-dns.setServers(['8.8.8.8', '1.1.1.1']);require('dotenv').config(); //dns pa q jale el atlas 
+dns.setServers(['8.8.8.8', '1.1.1.1']);
+require('dotenv').config(); //dns pa q jale el atlas 
 const logger = require('./cinescore/utils/logger');
 logger.info('Iniciando servidor', { carpeta: __dirname });
 
-// Errores que nadie capturó: se registran antes de que el proceso termine
+//errores que nadie capturó: se registran antes de que el proceso termine
 process.on('uncaughtException', (err) => {
   logger.error('uncaughtException (el proceso se cerrará)', err);
   process.exit(1);
@@ -13,7 +13,7 @@ process.on('unhandledRejection', (reason) => {
   logger.error('unhandledRejection', reason instanceof Error ? reason : { reason: String(reason) });
 });
 
-// Si falta alguna variable del .env avisa
+//si falta alguna variable del .env avisa
 const variablesRequeridas = ['MONGO_URI', 'JWT_SECRET'];
 if (process.env.PERMITIR_SESION !== 'false') variablesRequeridas.push('SESSION_SECRET');
 const faltantes = variablesRequeridas.filter(v => !process.env[v]);
@@ -31,7 +31,7 @@ const app = express();
 app.set('trust proxy', 1); //para render
 const PORT = process.env.PORT || 3000;
 
-// Carga los modelos
+//carga los modelos
 require('./cinescore/models');
 const { protegerPaginas, protegerApi, identificar, sesionPermitida } = require('./cinescore/middleware/auth');
 
@@ -39,7 +39,7 @@ const { protegerPaginas, protegerApi, identificar, sesionPermitida } = require('
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Sesiones
+//sesiones
 if (sesionPermitida()) {
   app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -48,17 +48,17 @@ if (sesionPermitida()) {
   }));
 }
 
-// Sin sesión, las páginas mandan al login
+//sin sesión, las páginas mandan al login
 app.use(protegerPaginas);
 
-//Para hacer las carpetas publicas
+//para hacer las carpetas publicas
 app.use('/css', express.static(path.join(__dirname, 'cinescore', 'css')));
 app.use('/js', express.static(path.join(__dirname, 'cinescore', 'js')));
 app.use('/vendor/tabler', express.static(path.join(__dirname, 'node_modules', '@tabler', 'icons-webfont')));
 app.use(express.static(path.join(__dirname, 'cinescore', 'html')));
 app.use('/html', express.static(path.join(__dirname, 'cinescore', 'html')));
 
-// Pa conectar a MongoDB pa Compass
+//pa conectar a MongoDB pa Compass
 mongoose.connection.on('disconnected', () => logger.warn('MongoDB desconectado'));
 mongoose.connection.on('error', (err) => logger.error('Error en la conexión a MongoDB', err));
 
@@ -66,12 +66,12 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => logger.info('Conexión exitosa a MongoDB'))
   .catch(err => logger.error('No se pudo conectar a la base de datos', err));
 
-//Ruta para poner la ventana principal y entrr a http://localhost:3000
+//ruta para poner la ventana principal y entrr a http://localhost:3000
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'cinescore', 'html', 'login.html'));
 });
 
-// Todo /api requiere un token válido, menos registro y login
+//todo /api requiere un token válido, menos registro y login
 app.use('/api', (req, res, next) => {
   console.log(req.method, req.originalUrl);
   next();
@@ -96,7 +96,7 @@ app.use('/api', (req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
-// manejador global de errores. (lo que no capturó una ruta termina aquí)
+// manejador global de errores. 
 app.use((err, req, res, next) => {
   if (err.type === 'entity.parse.failed') {
     logger.warn(`JSON inválido en ${req.method} ${req.originalUrl}`);
@@ -107,12 +107,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Error del servidor' });
 });
 
-//Servidor funcionando
+//linea para que jale en vercel
+module.exports = app;
+
+//servidor funcionando (local)
 const server = app.listen(PORT, () => {
   logger.info(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
-// Apagado ordenado ctrl c
+//apagado ordenado ctrl c
 async function apagar(senal) {
   logger.info(`Señal ${senal} recibida: cerrando servidor`);
   server.close(async () => {
